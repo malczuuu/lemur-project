@@ -1,0 +1,42 @@
+[versions]
+idea-ext = "1.4.1"
+problem4j-spring = "2.2.1"
+spotless = "8.2.1"
+spring-boot = "4.0.3"
+
+[plugins]
+idea-ext = { id = "org.jetbrains.gradle.plugin.idea-ext", version.ref = "idea-ext" }
+spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
+spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
+
+[libraries]
+# boms
+spring-boot-dependencies = { module = "org.springframework.boot:spring-boot-dependencies", version.ref = "spring-boot" }
+
+# spring boot starters modules
+spring-boot-starter = { module = "org.springframework.boot:spring-boot-starter" }
+spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test" }
+spring-boot-starter-data-jpa = { module = "org.springframework.boot:spring-boot-starter-data-jpa" }
+spring-boot-starter-data-jpa-test = { module = "org.springframework.boot:spring-boot-starter-data-jpa-test" }
+spring-boot-starter-flyway = { module = "org.springframework.boot:spring-boot-starter-flyway" }
+spring-boot-starter-flyway-test = { module = "org.springframework.boot:spring-boot-starter-flyway-test" }
+spring-boot-starter-kafka = { module = "org.springframework.boot:spring-boot-starter-kafka" }
+spring-boot-starter-kafka-test = { module = "org.springframework.boot:spring-boot-starter-kafka-test" }
+spring-boot-starter-webmvc = { module = "org.springframework.boot:spring-boot-starter-webmvc" }
+spring-boot-starter-webmvc-test = { module = "org.springframework.boot:spring-boot-starter-webmvc-test" }
+spring-boot-starter-validation = { module = "org.springframework.boot:spring-boot-starter-validation" }
+spring-boot-starter-validation-test = { module = "org.springframework.boot:spring-boot-starter-validation-test" }
+
+# spring boot modules
+spring-boot-resttestclient = { module = "org.springframework.boot:spring-boot-resttestclient" }
+spring-boot-testcontainers = { module = "org.springframework.boot:spring-boot-testcontainers" }
+
+# other modules managed by spring-boot-dependencies
+flyway-database-postgresql = { module = "org.flywaydb:flyway-database-postgresql" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
+postgresql = { module = "org.postgresql:postgresql" }
+testcontainers-kafka = { module = "org.testcontainers:testcontainers-kafka" }
+testcontainers-postgresql = { module = "org.testcontainers:testcontainers-postgresql" }
+
+# direct dependencies
+problem4j-spring-webmvc = { module = "io.github.problem4j:problem4j-spring-webmvc", version.ref = "problem4j-spring" }
