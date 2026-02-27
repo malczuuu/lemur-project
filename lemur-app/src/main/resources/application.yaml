@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: lemur
+    name: lemur-app
   main:
     banner-mode: off
   servlet:

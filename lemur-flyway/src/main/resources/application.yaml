@@ -1,6 +1,6 @@
 spring:
   application:
-    name: chimera-app-flyway
+    name: lemur-flyway
   main:
     banner-mode: off
   datasource:
