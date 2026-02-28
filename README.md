@@ -4,6 +4,11 @@
 
 A template Spring Boot project with a dummy reference implementation of a REST endpoint, tested with Testcontainers.
 
+> _Most of my sandbox apps these days look the same. This will make it easier to start new sandboxes without setting up
+> too much boilerplate._
+>
+> ~ _Author_
+
 ## Tech Stack
 
 - **Java** with **Spring Boot 4.0**
@@ -59,6 +64,7 @@ To run tests with Testcontainers, ensure Docker is running and add `-Pcontainers
 ```bash
 ./gradlew test -Pcontainers.enabled
 ```
+
 To run individual tests via IntelliJ IDEA, set `containers.enabled` in `gradle.properties` for convenience.
 
 ### Run
