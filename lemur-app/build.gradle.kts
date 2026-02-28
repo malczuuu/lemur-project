@@ -6,10 +6,6 @@ java {
     toolchain.languageVersion = JavaLanguageVersion.of(25)
 }
 
-repositories {
-    mavenCentral()
-}
-
 dependencies {
     implementation(platform(project(":lemur-libs:lemur-bom")))
 
