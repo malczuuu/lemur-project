@@ -1,5 +1,7 @@
 # Lemur Project
 
+![Banner](https://raw.githubusercontent.com/malczuuu/lemur-project/refs/heads/main/docs/img/banner.png)
+
 [![Gradle Build](https://github.com/malczuuu/lemur-project/actions/workflows/gradle-build.yml/badge.svg)](https://github.com/malczuuu/lemur-project/actions/workflows/gradle-build.yml)
 
 A template Spring Boot project with a dummy reference implementation of a REST endpoint, tested with Testcontainers.
