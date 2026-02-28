@@ -16,6 +16,7 @@ dependencies {
     implementation(libs.spring.boot.starter.actuator)
     implementation(libs.spring.boot.starter.data.jpa)
     implementation(libs.spring.boot.starter.kafka)
+    implementation(libs.spring.boot.starter.log4j2)
     implementation(libs.spring.boot.starter.webmvc)
     implementation(libs.spring.boot.starter.validation)
     implementation(libs.problem4j.spring.webmvc)
@@ -29,4 +30,8 @@ dependencies {
     testImplementation(libs.spring.boot.starter.actuator.test)
     testRuntimeOnly(libs.junit.platform.launcher)
     testRuntimeOnly(libs.postgresql)
+}
+
+configurations.all {
+    exclude(group = "org.springframework.boot", module = "spring-boot-starter-logging")
 }
