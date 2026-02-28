@@ -19,8 +19,7 @@ import org.springframework.test.web.servlet.client.RestTestClient;
 @ActiveProfiles(profiles = {"test"})
 @PostgresAwareTest
 @KafkaAwareTest
-@SpringBootTest(
-    classes = {LemurApplication.class})
+@SpringBootTest(classes = {LemurApplication.class})
 @AutoConfigureMetrics
 @AutoConfigureRestTestClient
 class ActuatorEndpointsTests {
