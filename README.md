@@ -59,6 +59,7 @@ To run tests with Testcontainers, ensure Docker is running and add `-Pcontainers
 ```bash
 ./gradlew test -Pcontainers.enabled
 ```
+To run individual tests via IntelliJ IDEA, set `containers.enabled` in `gradle.properties` for convenience.
 
 ### Run
 
