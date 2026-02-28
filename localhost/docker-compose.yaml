@@ -1,0 +1,66 @@
+services:
+
+  postgres:
+    image: postgres:18.1-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: lemur
+    ports:
+      - "127.0.0.1:5432:5432"
+    networks:
+      - postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d lemur"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  kafka:
+    image: apache/kafka:4.2.0
+    ports:
+      - "127.0.0.1:9092:9092"
+    environment:
+      CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qk
+      KAFKA_NODE_ID: 0
+      KAFKA_PROCESS_ROLES: controller,broker
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 0@kafka:49092
+      KAFKA_LISTENERS: EXTERNAL://:9092,INTERNAL://:29092,CONTROLLER://:49092
+      KAFKA_ADVERTISED_LISTENERS: EXTERNAL://localhost:9092,INTERNAL://kafka:29092,CONTROLLER://kafka:49092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT,INTERNAL:PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+    volumes:
+      - kafka_data:/var/lib/kafka/data:rw
+    networks:
+      - kafka
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --list"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  kafka-init-job:
+    image: apache/kafka:4.2.0
+    entrypoint: /bin/bash
+    networks:
+      - kafka
+    depends_on:
+      kafka:
+        condition: service_healthy
+    command: |
+      -c "
+        /opt/kafka/bin/kafka-topics.sh --create --if-not-exists --topic lemur --replication-factor=1 --partitions=5 --bootstrap-server kafka:29092
+      "
+
+networks:
+  kafka:
+  postgres:
+
+volumes:
+  kafka_data:
+  postgres_data:
