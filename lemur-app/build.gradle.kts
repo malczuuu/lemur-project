@@ -33,5 +33,5 @@ dependencies {
 }
 
 configurations.all {
-    exclude(group = "org.springframework.boot", module = "spring-boot-starter-logging")
+    exclude(group = libs.spring.boot.starter.logging.get().group, module = libs.spring.boot.starter.logging.get().name)
 }
