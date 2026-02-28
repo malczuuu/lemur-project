@@ -4,7 +4,7 @@ spring:
   main:
     banner-mode: off
   datasource:
-    url: jdbc:postgresql://localhost:5432/chimera
+    url: jdbc:postgresql://localhost:5432/lemur
     username: postgres
     password: postgres
   flyway:

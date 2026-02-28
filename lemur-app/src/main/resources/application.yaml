@@ -16,12 +16,23 @@ spring:
       ddl-auto: validate
     show-sql: false
   datasource:
-    url: jdbc:postgresql://localhost:5432/chimera
+    url: jdbc:postgresql://localhost:5432/lemur
     username: postgres
     password: postgres
   validation:
     method:
       adapt-constraint-violations: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,metrics,prometheus"
+  endpoint:
+    health:
+      show-details: always
+      probes:
+        enabled: true
 
 problem4j:
   detail-format: lowercase
