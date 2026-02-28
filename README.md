@@ -72,3 +72,6 @@ If running from command line, execute:
 ```
 
 Make sure a PostgreSQL instance and Kafka broker are available, or configure them via `application.yml`.
+
+Service starts on port `8321` by default if running from sources. In `Dockerfile`, port is normalized to a semi-standard
+port `8080`.
