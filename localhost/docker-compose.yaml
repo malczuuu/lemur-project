@@ -60,10 +60,15 @@ services:
         /opt/kafka/bin/kafka-topics.sh --create --if-not-exists --topic lemur --replication-factor=1 --partitions=5 --bootstrap-server kafka:29092
       "
 
+  #
+  # Apps Profile
+  #
+
   lemur-flyway:
     image: "lemur-flyway:${LEMUR_VERSION:-snapshot}"
     profiles:
       - apps
+      - monitoring
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/lemur
       SPRING_DATASOURCE_USERNAME: postgres
@@ -96,6 +101,10 @@ services:
         condition: service_healthy
       lemur-flyway:
         condition: service_completed_successfully
+
+  #
+  # Monitoring Profile
+  #
 
   prometheus:
     image: prom/prometheus:v3.10.0
