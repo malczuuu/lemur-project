@@ -27,7 +27,8 @@ scrape_configs:
             level: log.level
             logger: log.logger
             message: message
-            timestamp: @timestamp
+            app_name: service.name
+            timestamp: '"@timestamp"'
       - labels:
           level:
           logger:

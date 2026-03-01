@@ -3,7 +3,7 @@ name: lemur
 services:
 
   postgres:
-    image: postgres:18.1-alpine
+    image: postgres:18.3-alpine
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -98,7 +98,7 @@ services:
         condition: service_completed_successfully
 
   prometheus:
-    image: prom/prometheus:v3.3.0
+    image: prom/prometheus:v3.10.0
     profiles:
       - monitoring
     ports:
@@ -112,14 +112,14 @@ services:
       lemur-app:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "wget --spider -q http://localhost:9090/-/healthy"]
+      test: ["CMD-SHELL", "wget -qO- -q http://localhost:9090/-/healthy"]
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 10s
 
   loki:
-    image: grafana/loki:3.5.0
+    image: grafana/loki:3.6
     profiles:
       - monitoring
     volumes:
@@ -128,14 +128,14 @@ services:
     networks:
       - monitoring
     healthcheck:
-      test: ["CMD-SHELL", "wget --spider -q http://localhost:3100/ready"]
+      test: ["CMD", "/usr/bin/loki", "-health"]
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 10s
 
   promtail:
-    image: grafana/promtail:3.5.0
+    image: grafana/promtail:3.6
     profiles:
       - monitoring
     volumes:
@@ -147,14 +147,14 @@ services:
       loki:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "wget --spider -q http://localhost:9080/ready"]
+      test: ["CMD-SHELL", "wget -qO- -q http://localhost:9080/ready"]
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 10s
 
   grafana:
-    image: grafana/grafana:11.6.0
+    image: grafana/grafana:12.3
     profiles:
       - monitoring
     ports:
@@ -184,7 +184,7 @@ services:
       loki:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "wget --spider -q http://localhost:3000/api/health"]
+      test: ["CMD-SHELL", "wget -qO- -q http://localhost:3000/api/health"]
       interval: 10s
       timeout: 5s
       retries: 5
