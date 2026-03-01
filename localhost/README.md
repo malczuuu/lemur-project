@@ -68,7 +68,7 @@ docker compose --profile apps --profile monitoring down -v
 
 Both use the `LEMUR_VERSION` environment variable for the image tag (defaults to `snapshot`).
 
-The startup order is enforced: `postgres` (healthy) → `lemur-flyway` (completed) → `lemur-app`.
+The startup order is enforced: `postgres` (healthy) -> `lemur-flyway` (completed) -> `lemur-app`.
 
 ### monitoring (`monitoring` profile)
 
