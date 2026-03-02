@@ -1,4 +1,4 @@
-package io.github.malczuuu.lemur.app.domain;
+package io.github.malczuuu.lemur.app.domain.thing;
 
 import java.util.List;
 import java.util.Optional;

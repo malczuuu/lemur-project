@@ -1,10 +1,10 @@
-package io.github.malczuuu.lemur.app.rest;
+package io.github.malczuuu.lemur.app.adapter.rest;
 
 import io.github.malczuuu.lemur.app.common.Content;
 import io.github.malczuuu.lemur.app.common.Identity;
-import io.github.malczuuu.lemur.app.domain.ThingCreateDto;
-import io.github.malczuuu.lemur.app.domain.ThingDto;
-import io.github.malczuuu.lemur.app.domain.ThingService;
+import io.github.malczuuu.lemur.app.domain.thing.ThingCreateDto;
+import io.github.malczuuu.lemur.app.domain.thing.ThingDto;
+import io.github.malczuuu.lemur.app.domain.thing.ThingService;
 import jakarta.validation.Valid;
 import java.net.URI;
 import org.springframework.http.MediaType;

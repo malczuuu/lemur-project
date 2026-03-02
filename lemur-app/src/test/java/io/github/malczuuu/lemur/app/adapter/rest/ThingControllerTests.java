@@ -1,16 +1,17 @@
-package io.github.malczuuu.lemur.app.rest;
+package io.github.malczuuu.lemur.app.adapter.rest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.github.malczuuu.lemur.app.LemurApplication;
 import io.github.malczuuu.lemur.app.common.Content;
 import io.github.malczuuu.lemur.app.common.Identity;
-import io.github.malczuuu.lemur.app.domain.ThingDto;
-import io.github.malczuuu.lemur.app.domain.ThingEntity;
-import io.github.malczuuu.lemur.app.domain.ThingRepository;
+import io.github.malczuuu.lemur.app.domain.thing.ThingDto;
+import io.github.malczuuu.lemur.app.domain.thing.ThingEntity;
+import io.github.malczuuu.lemur.app.domain.thing.ThingRepository;
 import io.github.malczuuu.lemur.testkit.annotation.KafkaAwareTest;
 import io.github.malczuuu.lemur.testkit.annotation.PostgresAwareTest;
 import io.github.problem4j.core.Problem;
+import java.net.URI;
 import java.util.Map;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.AfterEach;
@@ -141,9 +142,9 @@ class ThingControllerTests {
     assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND);
 
     Problem problem = jsonMapper.readValue(response.getResponseBodyContent(), Problem.class);
+    assertThat(problem.getType()).isEqualTo(URI.create("THING_NOT_FOUND"));
     assertThat(problem.getTitle()).isEqualTo(HttpStatus.NOT_FOUND.getReasonPhrase());
     assertThat(problem.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
-    assertThat(problem.getDetail()).isEqualTo("thing not found");
   }
 
   @Test
@@ -159,9 +160,9 @@ class ThingControllerTests {
     assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND);
 
     Problem problem = jsonMapper.readValue(response.getResponseBodyContent(), Problem.class);
+    assertThat(problem.getType()).isEqualTo(URI.create("THING_NOT_FOUND"));
     assertThat(problem.getTitle()).isEqualTo(HttpStatus.NOT_FOUND.getReasonPhrase());
     assertThat(problem.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
-    assertThat(problem.getDetail()).isEqualTo("thing not found");
   }
 
   @Test
