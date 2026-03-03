@@ -1,4 +1,4 @@
-package io.github.malczuuu.lemur.app.domain.thing;
+package io.github.malczuuu.lemur.model.rest;
 
 import jakarta.validation.constraints.NotNull;
 

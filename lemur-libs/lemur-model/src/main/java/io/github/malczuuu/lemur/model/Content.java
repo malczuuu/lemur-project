@@ -1,4 +1,4 @@
-package io.github.malczuuu.lemur.app.common;
+package io.github.malczuuu.lemur.model;
 
 import java.util.Collections;
 import java.util.List;

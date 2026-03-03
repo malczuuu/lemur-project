@@ -1,8 +1,12 @@
 [versions]
 idea-ext = "1.4.1"
+jackson = "3.1.0"
+jspecify = "1.0.0"
+junit = "6.0.3"
 problem4j-spring = "2.2.1"
 spotless = "8.2.1"
 spring-boot = "4.0.3"
+springdoc-openapi = "3.0.2"
 
 [plugins]
 idea-ext = { id = "org.jetbrains.gradle.plugin.idea-ext", version.ref = "idea-ext" }
@@ -11,9 +15,20 @@ spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
 
 [libraries]
 # boms
+jackson-bom = { module = "tools.jackson:jackson-bom", version.ref = "jackson" }
+junit-bom = { module = "org.junit:junit-bom", version.ref = "junit" }
+problem4j-spring-bom = { module = "io.github.problem4j:problem4j-spring-bom", version.ref = "problem4j-spring" }
 spring-boot-dependencies = { module = "org.springframework.boot:spring-boot-dependencies", version.ref = "spring-boot" }
+springdoc-openapi-bom = { module = "org.springdoc:springdoc-openapi-bom", version.ref = "springdoc-openapi" }
 
-# spring boot starters modules
+# versions managed by junit-bom
+junit-jupiter = { module = "org.junit.jupiter:junit-jupiter" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
+
+# modules managed by problem4j-spring-bom
+problem4j-spring-webmvc = { module = "io.github.problem4j:problem4j-spring-webmvc" }
+
+# spring boot starter modules managed by spring-boot-dependencies
 spring-boot-starter = { module = "org.springframework.boot:spring-boot-starter" }
 spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test" }
 spring-boot-starter-actuator = { module = "org.springframework.boot:spring-boot-starter-actuator" }
@@ -31,17 +46,20 @@ spring-boot-starter-webmvc-test = { module = "org.springframework.boot:spring-bo
 spring-boot-starter-validation = { module = "org.springframework.boot:spring-boot-starter-validation" }
 spring-boot-starter-validation-test = { module = "org.springframework.boot:spring-boot-starter-validation-test" }
 
-# spring boot modules
+# spring boot modules managed by spring-boot-dependencies
 spring-boot-resttestclient = { module = "org.springframework.boot:spring-boot-resttestclient" }
 spring-boot-testcontainers = { module = "org.springframework.boot:spring-boot-testcontainers" }
 
-# other modules managed by spring-boot-dependencies
+# other libraries managed by spring-boot-dependencies
 flyway-database-postgresql = { module = "org.flywaydb:flyway-database-postgresql" }
-junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
+jakarta-validation-api = { module = "jakarta.validation:jakarta.validation-api" }
 micrometer-registry-prometheus = { module = "io.micrometer:micrometer-registry-prometheus" }
 postgresql = { module = "org.postgresql:postgresql" }
 testcontainers-kafka = { module = "org.testcontainers:testcontainers-kafka" }
 testcontainers-postgresql = { module = "org.testcontainers:testcontainers-postgresql" }
 
+# modules managed by springdoc-openapi-bom
+springdoc-openapi-starter-webmvc-ui = { module = "org.springdoc:springdoc-openapi-starter-webmvc-ui" }
+
 # direct dependencies
-problem4j-spring-webmvc = { module = "io.github.problem4j:problem4j-spring-webmvc", version.ref = "problem4j-spring" }
+jspecify = { module = "org.jspecify:jspecify", version.ref = "jspecify" }

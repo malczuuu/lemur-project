@@ -1,9 +1,10 @@
 package io.github.malczuuu.lemur.app.domain.thing;
 
+import jakarta.persistence.LockModeType;
 import java.util.List;
 import java.util.Optional;
-import org.springframework.data.domain.Limit;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 
 public interface ThingRepository extends JpaRepository<ThingEntity, Long> {
@@ -27,11 +28,18 @@ public interface ThingRepository extends JpaRepository<ThingEntity, Long> {
       where
           t.id = :id
       """)
-  List<ThingEntity> findAllById(Long id, Limit limit);
+  Optional<ThingEntity> findById(Long id);
 
-  default Optional<ThingEntity> findById(Long id) {
-    return findAllById(id, Limit.of(1)).stream().findFirst();
-  }
+  @Query(
+      """
+      select t
+      from
+          ThingEntity t
+      where
+          t.id = :id
+      """)
+  @Lock(LockModeType.PESSIMISTIC_WRITE)
+  Optional<ThingEntity> lockById(Long id);
 
   <T extends ThingEntity> T save(T item);
 }

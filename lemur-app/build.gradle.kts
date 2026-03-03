@@ -9,15 +9,19 @@ java {
 dependencies {
     implementation(platform(project(":lemur-libs:lemur-bom")))
 
+    implementation(project(":lemur-libs:lemur-model"))
+
+    implementation(libs.problem4j.spring.webmvc)
+
     implementation(libs.spring.boot.starter.actuator)
     implementation(libs.spring.boot.starter.data.jpa)
     implementation(libs.spring.boot.starter.kafka)
     implementation(libs.spring.boot.starter.log4j2)
     implementation(libs.spring.boot.starter.webmvc)
     implementation(libs.spring.boot.starter.validation)
-    implementation(libs.problem4j.spring.webmvc)
-
     implementation(libs.micrometer.registry.prometheus)
+
+    implementation(libs.springdoc.openapi.starter.webmvc.ui)
 
     runtimeOnly(libs.postgresql)
 

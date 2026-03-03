@@ -1,4 +1,4 @@
 @NullMarked
-package io.github.malczuuu.lemur.app.infrastructure;
+package io.github.malczuuu.lemur.model;
 
 import org.jspecify.annotations.NullMarked;

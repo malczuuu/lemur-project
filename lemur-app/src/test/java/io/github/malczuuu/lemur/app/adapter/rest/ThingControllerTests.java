@@ -3,11 +3,11 @@ package io.github.malczuuu.lemur.app.adapter.rest;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.github.malczuuu.lemur.app.LemurApplication;
-import io.github.malczuuu.lemur.app.common.Content;
-import io.github.malczuuu.lemur.app.common.Identity;
-import io.github.malczuuu.lemur.app.domain.thing.ThingDto;
 import io.github.malczuuu.lemur.app.domain.thing.ThingEntity;
 import io.github.malczuuu.lemur.app.domain.thing.ThingRepository;
+import io.github.malczuuu.lemur.app.domain.thing.model.ThingModel;
+import io.github.malczuuu.lemur.model.Content;
+import io.github.malczuuu.lemur.model.Identity;
 import io.github.malczuuu.lemur.testkit.annotation.KafkaAwareTest;
 import io.github.malczuuu.lemur.testkit.annotation.PostgresAwareTest;
 import io.github.problem4j.core.Problem;
@@ -70,7 +70,7 @@ class ThingControllerTests {
 
     assertThat(response.getStatus()).isEqualTo(HttpStatus.OK);
 
-    Content<ThingDto> body =
+    Content<ThingModel> body =
         jsonMapper.readValue(response.getResponseBodyContent(), new TypeReference<>() {});
     assertThat(body.content()).isEmpty();
   }
@@ -106,7 +106,7 @@ class ThingControllerTests {
 
     assertThat(getResponse.getStatus()).isEqualTo(HttpStatus.OK);
 
-    ThingDto body = jsonMapper.readValue(getResponse.getResponseBodyContent(), ThingDto.class);
+    ThingModel body = jsonMapper.readValue(getResponse.getResponseBodyContent(), ThingModel.class);
     assertThat(body.name()).isEqualTo("thing-1");
     assertThat(body.description()).isEqualTo("desc-1");
   }
@@ -123,7 +123,7 @@ class ThingControllerTests {
 
     assertThat(listResponse.getStatus()).isEqualTo(HttpStatus.OK);
 
-    Content<ThingDto> body =
+    Content<ThingModel> body =
         jsonMapper.readValue(listResponse.getResponseBodyContent(), new TypeReference<>() {});
     assertThat(body.content()).hasSize(3);
     assertThat(body.content().toString()).contains("thing-1", "thing-2", "thing-3");
