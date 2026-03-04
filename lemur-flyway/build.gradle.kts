@@ -5,7 +5,9 @@ plugins {
 dependencies {
     implementation(platform(project(":lemur-libs:lemur-bom")))
 
+    implementation(project(":lemur-libs:lemur-log4j2"))
     implementation(project(":lemur-libs:lemur-migration"))
+
     implementation(libs.flyway.database.postgresql)
     implementation(libs.spring.boot.starter.flyway)
     implementation(libs.spring.boot.starter.log4j2)
