@@ -21,6 +21,9 @@ problem4j-spring-bom = { module = "io.github.problem4j:problem4j-spring-bom", ve
 spring-boot-dependencies = { module = "org.springframework.boot:spring-boot-dependencies", version.ref = "spring-boot" }
 springdoc-openapi-bom = { module = "org.springdoc:springdoc-openapi-bom", version.ref = "springdoc-openapi" }
 
+# modules managed by jackson-bom
+jackson-annotations = { module = "com.fasterxml.jackson.core:jackson-annotations" }
+
 # versions managed by junit-bom
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter" }
 junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }

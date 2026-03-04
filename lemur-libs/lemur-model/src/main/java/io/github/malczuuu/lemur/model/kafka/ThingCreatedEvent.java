@@ -1,3 +1,8 @@
 package io.github.malczuuu.lemur.model.kafka;
 
-public record ThingCreatedEvent(String id, String name, String description) {}
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+public record ThingCreatedEvent(
+    @JsonProperty("id") String id,
+    @JsonProperty("name") String name,
+    @JsonProperty("description") String description) {}

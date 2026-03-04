@@ -5,6 +5,7 @@ plugins {
 dependencies {
     api(platform(project(":lemur-libs:lemur-bom")))
 
+    api(libs.jackson.annotations)
     api(libs.jakarta.validation.api)
     api(libs.jspecify)
 

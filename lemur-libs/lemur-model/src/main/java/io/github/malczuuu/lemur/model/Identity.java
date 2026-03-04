@@ -1,3 +1,5 @@
 package io.github.malczuuu.lemur.model;
 
-public record Identity(String id) {}
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+public record Identity(@JsonProperty("id") String id) {}
