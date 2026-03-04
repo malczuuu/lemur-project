@@ -1,8 +1,6 @@
 package io.github.malczuuu.lemur.app.adapter.rest;
 
-import io.github.malczuuu.lemur.app.adapter.rest.support.ThingMapper;
-import io.github.malczuuu.lemur.app.domain.thing.ThingService;
-import io.github.malczuuu.lemur.app.domain.thing.model.ThingModel;
+import io.github.malczuuu.lemur.app.core.ThingService;
 import io.github.malczuuu.lemur.model.Content;
 import io.github.malczuuu.lemur.model.Identity;
 import io.github.malczuuu.lemur.model.rest.ThingCreateDto;
@@ -33,20 +31,20 @@ public class ThingController {
   }
 
   @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-  public Content<ThingModel> getItems() {
-    return thingService.getItems();
+  public Content<ThingDto> getThings() {
+    return thingService.getThings().map(mapper::toThingDto);
   }
 
   @GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<ThingDto> getItemById(@PathVariable("id") String id) {
-    return ResponseEntity.ok(mapper.toThingDto(thingService.getItemById(id)));
+  public ResponseEntity<ThingDto> getThingById(@PathVariable("id") String id) {
+    return ResponseEntity.ok(mapper.toThingDto(thingService.getThingById(id)));
   }
 
   @PostMapping(
       consumes = MediaType.APPLICATION_JSON_VALUE,
       produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Identity> createItem(@RequestBody @Valid ThingCreateDto requestBody) {
-    Identity responseBody = thingService.createItem(mapper.toThingCreateModel(requestBody));
+  public ResponseEntity<Identity> createThing(@RequestBody @Valid ThingCreateDto requestBody) {
+    Identity responseBody = thingService.createThing(mapper.toThingCreateModel(requestBody));
     return ResponseEntity.created(URI.create("/api/things/" + responseBody.id()))
         .body(responseBody);
   }
@@ -55,9 +53,9 @@ public class ThingController {
       path = "/{id}",
       consumes = MediaType.APPLICATION_JSON_VALUE,
       produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Void> updateItem(
+  public ResponseEntity<Void> updateThing(
       @PathVariable("id") String id, @RequestBody @Valid ThingUpdateDto requestBody) {
-    thingService.updateItem(id, mapper.toThingUpdateModel(requestBody));
+    thingService.updateThing(id, mapper.toThingUpdateModel(requestBody));
     return ResponseEntity.noContent().build();
   }
 }

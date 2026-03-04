@@ -1,3 +1,3 @@
-package io.github.malczuuu.lemur.app.domain.thing.model;
+package io.github.malczuuu.lemur.app.core.model;
 
 public record ThingCreateModel(String name, String description) {}

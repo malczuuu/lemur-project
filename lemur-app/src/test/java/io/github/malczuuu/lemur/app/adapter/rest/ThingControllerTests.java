@@ -3,9 +3,9 @@ package io.github.malczuuu.lemur.app.adapter.rest;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.github.malczuuu.lemur.app.LemurApplication;
-import io.github.malczuuu.lemur.app.domain.thing.ThingEntity;
-import io.github.malczuuu.lemur.app.domain.thing.ThingRepository;
-import io.github.malczuuu.lemur.app.domain.thing.model.ThingModel;
+import io.github.malczuuu.lemur.app.core.model.ThingModel;
+import io.github.malczuuu.lemur.app.infra.data.jpa.ThingEntity;
+import io.github.malczuuu.lemur.app.infra.data.jpa.ThingJpaRepository;
 import io.github.malczuuu.lemur.model.Content;
 import io.github.malczuuu.lemur.model.Identity;
 import io.github.malczuuu.lemur.testkit.annotation.KafkaAwareTest;
@@ -37,7 +37,7 @@ class ThingControllerTests {
 
   @Autowired private RestTestClient restClient;
 
-  @Autowired private ThingRepository thingRepository;
+  @Autowired private ThingJpaRepository thingJpaRepository;
 
   @Autowired private JsonMapper jsonMapper;
 
@@ -45,20 +45,20 @@ class ThingControllerTests {
 
   @BeforeEach
   void beforeEach() {
-    ThingEntity entity1 = thingRepository.save(new ThingEntity("thing-1", "desc-1"));
-    thingRepository.save(new ThingEntity("thing-2", "desc-2"));
-    thingRepository.save(new ThingEntity("thing-3", "desc-3"));
+    ThingEntity entity1 = thingJpaRepository.save(new ThingEntity("thing-1", "desc-1"));
+    thingJpaRepository.save(new ThingEntity("thing-2", "desc-2"));
+    thingJpaRepository.save(new ThingEntity("thing-3", "desc-3"));
     existingThingId = entity1.getId();
   }
 
   @AfterEach
   void afterEach() {
-    thingRepository.deleteAll();
+    thingJpaRepository.deleteAll();
   }
 
   @Test
   void givenNoThings_whenGetThings_thenReturnEmptyContent() {
-    thingRepository.deleteAll();
+    thingJpaRepository.deleteAll();
 
     ExchangeResult response =
         restClient

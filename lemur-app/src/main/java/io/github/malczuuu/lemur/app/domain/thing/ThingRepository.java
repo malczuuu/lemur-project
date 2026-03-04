@@ -1,45 +1,17 @@
 package io.github.malczuuu.lemur.app.domain.thing;
 
-import jakarta.persistence.LockModeType;
 import java.util.List;
 import java.util.Optional;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Lock;
-import org.springframework.data.jpa.repository.Query;
 
-public interface ThingRepository extends JpaRepository<ThingEntity, Long> {
+public interface ThingRepository {
 
-  @Query(
-      """
-      select t
-      from
-          ThingEntity t
-      order by
-          t.createdDate ASC,
-          t.id ASC
-      """)
-  List<ThingEntity> findAll();
+  List<Thing> findAll();
 
-  @Query(
-      """
-      select t
-      from
-          ThingEntity t
-      where
-          t.id = :id
-      """)
-  Optional<ThingEntity> findById(Long id);
+  Optional<Thing> findById(String id);
 
-  @Query(
-      """
-      select t
-      from
-          ThingEntity t
-      where
-          t.id = :id
-      """)
-  @Lock(LockModeType.PESSIMISTIC_WRITE)
-  Optional<ThingEntity> lockById(Long id);
+  Optional<Thing> lockById(String id);
 
-  <T extends ThingEntity> T save(T item);
+  Thing save(Thing thing);
+
+  void deleteById(String id);
 }

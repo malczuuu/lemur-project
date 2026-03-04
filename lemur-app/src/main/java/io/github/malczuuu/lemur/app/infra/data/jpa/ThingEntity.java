@@ -1,4 +1,4 @@
-package io.github.malczuuu.lemur.app.domain.thing;
+package io.github.malczuuu.lemur.app.infra.data.jpa;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -58,6 +58,21 @@ public class ThingEntity implements Persistable<Long> {
     this.id = id;
     this.name = name;
     this.description = description;
+  }
+
+  public ThingEntity(
+      @Nullable Long id,
+      String name,
+      String description,
+      Instant createdDate,
+      Instant lastModifiedDate,
+      Long version) {
+    this.id = id;
+    this.name = name;
+    this.description = description;
+    this.createdDate = createdDate;
+    this.lastModifiedDate = lastModifiedDate;
+    this.version = version;
   }
 
   @Override

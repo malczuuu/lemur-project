@@ -1,4 +1,4 @@
-package io.github.malczuuu.lemur.app.infrastructure;
+package io.github.malczuuu.lemur.app.infra;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

@@ -28,6 +28,7 @@ A template Spring Boot project with a dummy reference implementation of a REST e
 | `lemur-flyway`               | Standalone Flyway runner                        |
 | `lemur-libs/lemur-bom`       | Bill of Materials for dependency management     |
 | `lemur-libs/lemur-migration` | Database migration scripts                      |
+| `lemur-libs/lemur-model`     | Shared REST API and Kafka message models        |
 | `lemur-libs/lemur-testkit`   | Shared test utilities and Testcontainers setup  |
 
 ## Reference Implementation
