@@ -8,6 +8,7 @@ dependencies {
     api(libs.jackson.annotations)
     api(libs.jakarta.validation.api)
     api(libs.jspecify)
+    api(libs.kafka.clients)
 
     testImplementation(libs.junit.jupiter)
     testRuntimeOnly(libs.junit.platform.launcher)

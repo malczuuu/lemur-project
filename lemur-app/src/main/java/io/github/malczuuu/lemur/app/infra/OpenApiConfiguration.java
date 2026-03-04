@@ -1,4 +1,4 @@
-package io.github.malczuuu.lemur.app.infra.openapi;
+package io.github.malczuuu.lemur.app.infra;
 
 import io.swagger.v3.oas.models.Paths;
 import io.swagger.v3.oas.models.info.Info;

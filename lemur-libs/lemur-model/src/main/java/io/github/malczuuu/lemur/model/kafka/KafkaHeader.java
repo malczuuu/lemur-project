@@ -1,0 +1,15 @@
+package io.github.malczuuu.lemur.model.kafka;
+
+import java.nio.charset.StandardCharsets;
+import java.util.Optional;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+
+public final class KafkaHeader {
+
+  public static final String EVENT_TYPE_HEADER = "event_type";
+
+  public static Optional<String> findHeader(ConsumerRecord<String, String> record, String key) {
+    return Optional.ofNullable(record.headers().lastHeader(key))
+        .map(header -> new String(header.value(), StandardCharsets.UTF_8));
+  }
+}

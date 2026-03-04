@@ -4,10 +4,13 @@ import io.github.malczuuu.lemur.app.core.model.ThingCreateModel;
 import io.github.malczuuu.lemur.app.core.model.ThingModel;
 import io.github.malczuuu.lemur.app.core.model.ThingUpdateModel;
 import io.github.malczuuu.lemur.app.domain.thing.Thing;
+import io.github.malczuuu.lemur.app.domain.thing.ThingEventGateway;
 import io.github.malczuuu.lemur.app.domain.thing.ThingNotFoundException;
 import io.github.malczuuu.lemur.app.domain.thing.ThingRepository;
 import io.github.malczuuu.lemur.model.Content;
 import io.github.malczuuu.lemur.model.Identity;
+import io.github.malczuuu.lemur.model.message.ThingCreatedEvent;
+import io.github.malczuuu.lemur.model.message.ThingUpdatedEvent;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,9 +19,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class ThingService {
 
   private final ThingRepository thingRepository;
+  private final ThingEventGateway thingEventGateway;
 
-  public ThingService(ThingRepository thingRepository) {
+  public ThingService(ThingRepository thingRepository, ThingEventGateway thingEventGateway) {
     this.thingRepository = thingRepository;
+    this.thingEventGateway = thingEventGateway;
   }
 
   public Content<ThingModel> getThings() {
@@ -32,9 +37,11 @@ public class ThingService {
     return toThingModel(entity);
   }
 
+  @Transactional
   public Identity createThing(ThingCreateModel thing) {
     Thing entity = new Thing(thing.name(), thing.description());
     entity = thingRepository.save(entity);
+    thingEventGateway.publish(toThingCreatedEvent(entity));
     return new Identity(entity.getId().getValue());
   }
 
@@ -43,7 +50,8 @@ public class ThingService {
     Thing entity = lockThing(id);
     entity.setName(update.name());
     entity.setDescription(update.description());
-    thingRepository.save(entity);
+    entity = thingRepository.save(entity);
+    thingEventGateway.publish(toThingUpdatedEvent(entity));
   }
 
   private Thing fetchThing(String id) {
@@ -56,5 +64,15 @@ public class ThingService {
 
   private ThingModel toThingModel(Thing thing) {
     return new ThingModel(thing.getId().getValue(), thing.getName(), thing.getDescription());
+  }
+
+  private ThingCreatedEvent toThingCreatedEvent(Thing entity) {
+    return new ThingCreatedEvent(
+        entity.getId().getValue(), entity.getName(), entity.getDescription(), entity.getVersion());
+  }
+
+  private ThingUpdatedEvent toThingUpdatedEvent(Thing entity) {
+    return new ThingUpdatedEvent(
+        entity.getId().getValue(), entity.getName(), entity.getDescription(), entity.getVersion());
   }
 }

@@ -1,5 +1,6 @@
 package io.github.malczuuu.lemur.testkit.container;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.context.annotation.Bean;
@@ -21,8 +22,9 @@ public class KafkaContainerConfiguration {
   }
 
   @Bean
-  public KafkaAdmin.NewTopics uiotTopics() {
+  public KafkaAdmin.NewTopics lemurAppTopics(
+      @Value("${lemur-app.kafka.topic.thing-events}") String thingEventsTopic) {
     return new KafkaAdmin.NewTopics(
-        TopicBuilder.name("lemur-topic").partitions(5).replicas(1).build());
+        TopicBuilder.name(thingEventsTopic).partitions(5).replicas(1).build());
   }
 }
