@@ -2,10 +2,6 @@ plugins {
     id("internal.spring-app-convention")
 }
 
-java {
-    toolchain.languageVersion = JavaLanguageVersion.of(25)
-}
-
 dependencies {
     implementation(platform(project(":lemur-libs:lemur-bom")))
 
