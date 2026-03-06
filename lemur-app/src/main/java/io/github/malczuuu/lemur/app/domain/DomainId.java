@@ -1,21 +1,23 @@
 package io.github.malczuuu.lemur.app.domain;
 
+import org.jspecify.annotations.Nullable;
+
 public final class DomainId {
 
   public static DomainId unassigned() {
     return UNASSIGNED;
   }
 
-  public static DomainId of(Long value) {
-    if (value < 0) {
-      throw new IllegalArgumentException("value cannot be negative");
+  public static DomainId of(@Nullable Long value) {
+    if (value == null || value < 0) {
+      throw new IllegalArgumentException("value must be non-null and non-negative");
     }
     return new DomainId(String.valueOf(value));
   }
 
-  public static DomainId of(String value) {
-    if (value.isBlank()) {
-      throw new IllegalArgumentException("value cannot be blank");
+  public static DomainId of(@Nullable String value) {
+    if (value == null || value.isBlank()) {
+      throw new IllegalArgumentException("value must be non-null and non-blank");
     }
     return new DomainId(value);
   }
