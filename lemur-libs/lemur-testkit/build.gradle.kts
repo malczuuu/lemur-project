@@ -1,4 +1,5 @@
 plugins {
+    id("internal.errorprone-convention")
     id("internal.java-library-convention")
 }
 
@@ -20,4 +21,7 @@ dependencies {
     api(libs.flyway.database.postgresql)
     api(libs.testcontainers.kafka)
     api(libs.testcontainers.postgresql)
+
+    errorprone(libs.errorprone.core)
+    errorprone(libs.nullaway)
 }

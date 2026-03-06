@@ -1,4 +1,5 @@
 plugins {
+    id("internal.errorprone-convention")
     id("internal.java-library-convention")
 }
 
@@ -7,4 +8,7 @@ dependencies {
 
     testImplementation(project(":lemur-libs:lemur-testkit"))
     testRuntimeOnly(libs.junit.platform.launcher)
+
+    errorprone(libs.errorprone.core)
+    errorprone(libs.nullaway)
 }

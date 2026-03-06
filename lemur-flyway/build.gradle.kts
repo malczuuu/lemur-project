@@ -1,4 +1,5 @@
 plugins {
+    id("internal.errorprone-convention")
     id("internal.spring-app-convention")
 }
 
@@ -17,6 +18,9 @@ dependencies {
     testImplementation(libs.spring.boot.starter.flyway.test)
     testRuntimeOnly(libs.junit.platform.launcher)
     testRuntimeOnly(libs.postgresql)
+
+    errorprone(libs.errorprone.core)
+    errorprone(libs.nullaway)
 }
 
 configurations.all {

@@ -18,6 +18,7 @@ public interface ThingJpaRepository extends JpaRepository<ThingEntity, Long> {
           t.createdDate ASC,
           t.id ASC
       """)
+  @Override
   List<ThingEntity> findAll();
 
   @Query(
@@ -28,6 +29,7 @@ public interface ThingJpaRepository extends JpaRepository<ThingEntity, Long> {
       where
           t.id = :id
       """)
+  @Override
   Optional<ThingEntity> findById(Long id);
 
   @Query(
@@ -41,5 +43,6 @@ public interface ThingJpaRepository extends JpaRepository<ThingEntity, Long> {
   @Lock(LockModeType.PESSIMISTIC_WRITE)
   Optional<ThingEntity> lockById(Long id);
 
+  @Override
   <T extends ThingEntity> T save(T item);
 }

@@ -1,14 +1,18 @@
 [versions]
+errorprone = "2.48.0"
+errorprone-plugin = "5.1.0"
 idea-ext = "1.4.1"
 jackson = "3.1.0"
 jspecify = "1.0.0"
 junit = "6.0.3"
+nullaway = "0.13.1"
 problem4j-spring = "2.2.1"
 spotless = "8.3.0"
 spring-boot = "4.0.3"
 springdoc-openapi = "3.0.2"
 
 [plugins]
+errorprone = { id = "net.ltgt.errorprone", version.ref = "errorprone-plugin" }
 idea-ext = { id = "org.jetbrains.gradle.plugin.idea-ext", version.ref = "idea-ext" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
 spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
@@ -66,4 +70,6 @@ testcontainers-postgresql = { module = "org.testcontainers:testcontainers-postgr
 springdoc-openapi-starter-webmvc-ui = { module = "org.springdoc:springdoc-openapi-starter-webmvc-ui" }
 
 # direct dependencies
+errorprone-core = { module = "com.google.errorprone:error_prone_core", version.ref = "errorprone" }
 jspecify = { module = "org.jspecify:jspecify", version.ref = "jspecify" }
+nullaway = { module = "com.uber.nullaway:nullaway", version.ref = "nullaway" }

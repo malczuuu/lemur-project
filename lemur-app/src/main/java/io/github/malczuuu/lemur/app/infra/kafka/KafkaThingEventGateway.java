@@ -62,7 +62,7 @@ class KafkaThingEventGateway implements ThingEventGateway {
       ProducerRecord<String, String> record =
           new ProducerRecord<>(topic, null, key, value, headers);
 
-      kafkaOperations.send(record);
+      kafkaOperations.send(record).get();
       meterRegistry.counter(THING_CREATED_SUCCESS_METRIC).increment();
     } catch (Exception e) {
       log.error("Failed to publish ThingCreatedEvent to Kafka", e);
@@ -84,7 +84,7 @@ class KafkaThingEventGateway implements ThingEventGateway {
       ProducerRecord<String, String> record =
           new ProducerRecord<>(topic, null, key, value, headers);
 
-      kafkaOperations.send(record);
+      kafkaOperations.send(record).get();
       meterRegistry.counter(THING_UPDATED_SUCCESS_METRIC).increment();
     } catch (Exception e) {
       log.error("Failed to publish ThingUpdatedEvent to Kafka", e);

@@ -1,4 +1,5 @@
 plugins {
+    id("internal.errorprone-convention")
     id("internal.java-library-convention")
 }
 
@@ -12,4 +13,7 @@ dependencies {
 
     testImplementation(libs.junit.jupiter)
     testRuntimeOnly(libs.junit.platform.launcher)
+
+    errorprone(libs.errorprone.core)
+    errorprone(libs.nullaway)
 }
