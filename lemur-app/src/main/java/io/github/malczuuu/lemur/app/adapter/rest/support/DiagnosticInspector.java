@@ -38,16 +38,13 @@ public class DiagnosticInspector implements AdviceWebMvcInspector {
       HttpStatusCode status,
       WebRequest request) {
 
+    RequestInfo info = RequestInfo.from(request, problem, ex);
+
     List<Tag> tags = new ArrayList<>();
-    tags.add(Tag.of("error", ex.getClass().getSimpleName()));
+    tags.add(Tag.of("error", info.error()));
     tags.add(Tag.of("status", String.valueOf(status.value())));
-    if (request instanceof ServletWebRequest r) {
-      tags.add(Tag.of("path", r.getRequest().getRequestURI()));
-      tags.add(Tag.of("method", r.getRequest().getMethod()));
-    }
-    if (problem.isTypeNonBlank()) {
-      tags.add(Tag.of("type", problem.getType().toString()));
-    }
+    tags.add(Tag.of("path", info.path()));
+    tags.add(Tag.of("method", info.method()));
 
     meterRegistry.counter(REST_ERRORS_METRIC, tags).increment();
 
@@ -60,5 +57,21 @@ public class DiagnosticInspector implements AdviceWebMvcInspector {
     }
 
     builder.log("Handled exception in HTTP controller");
+  }
+
+  private record RequestInfo(String path, String method, String error) {
+
+    private static final String UNKNOWN = "unknown";
+
+    private static RequestInfo from(WebRequest request, Problem problem, Exception ex) {
+      String type =
+          problem.isTypeNonBlank() ? problem.getType().toString() : ex.getClass().getSimpleName();
+
+      if (request instanceof ServletWebRequest r) {
+        return new RequestInfo(r.getRequest().getRequestURI(), r.getRequest().getMethod(), type);
+      } else {
+        return new RequestInfo(UNKNOWN, UNKNOWN, type);
+      }
+    }
   }
 }
