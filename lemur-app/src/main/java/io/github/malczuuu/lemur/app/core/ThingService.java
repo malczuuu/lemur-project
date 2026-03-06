@@ -12,6 +12,8 @@ import io.github.malczuuu.lemur.model.Identity;
 import io.github.malczuuu.lemur.model.message.ThingCreatedEvent;
 import io.github.malczuuu.lemur.model.message.ThingUpdatedEvent;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,11 +39,21 @@ public class ThingService {
     return toThingModel(entity);
   }
 
+  private final AtomicInteger counter = new AtomicInteger(0);
+
   @Transactional
   public Identity createThing(ThingCreateModel thing) {
     Thing entity = new Thing(thing.name(), thing.description());
     entity = thingRepository.save(entity);
     thingEventGateway.publish(toThingCreatedEvent(entity));
+    try {
+      Thread.sleep(ThreadLocalRandom.current().nextInt(800, 1200));
+    } catch (InterruptedException e) {
+      throw new RuntimeException(e);
+    }
+    if (counter.incrementAndGet() % 2 == 0) {
+      throw new RuntimeException("simulated failure");
+    }
     return new Identity(entity.getId().getValue());
   }
 

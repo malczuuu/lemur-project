@@ -27,10 +27,12 @@ spring:
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      transaction-id-prefix: lemur-app-producer-
     consumer:
       group-id: lemur-app
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      isolation-level: read_committed
 
 management:
   endpoints:
