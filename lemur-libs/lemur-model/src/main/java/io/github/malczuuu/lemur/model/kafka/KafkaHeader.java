@@ -12,4 +12,6 @@ public final class KafkaHeader {
     return Optional.ofNullable(record.headers().lastHeader(key))
         .map(header -> new String(header.value(), StandardCharsets.UTF_8));
   }
+
+  private KafkaHeader() {}
 }

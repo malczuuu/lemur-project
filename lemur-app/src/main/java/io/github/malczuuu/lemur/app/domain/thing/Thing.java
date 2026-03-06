@@ -1,5 +1,6 @@
 package io.github.malczuuu.lemur.app.domain.thing;
 
+import io.github.malczuuu.lemur.app.common.Audits;
 import io.github.malczuuu.lemur.app.domain.DomainId;
 import io.github.malczuuu.lemur.app.domain.DomainObject;
 import java.time.Instant;
@@ -14,7 +15,7 @@ public class Thing implements DomainObject {
   private Long version;
 
   public Thing(String name, String description) {
-    this(name, description, BLANK_INSTANT);
+    this(name, description, Audits.UNAUDITED);
   }
 
   public Thing(String name, String description, Instant createdDate) {
