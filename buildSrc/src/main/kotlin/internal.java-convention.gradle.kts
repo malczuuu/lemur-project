@@ -1,3 +1,4 @@
+import org.gradle.api.GradleException
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 
@@ -41,4 +42,35 @@ tasks.withType<Test>().configureEach {
 
     systemProperty("user.language", "en")
     systemProperty("user.country", "US")
+}
+
+tasks.named("check") {
+    dependsOn("checkPackageInfo")
+}
+
+tasks.register<DefaultTask>("checkPackageInfo") {
+    group = "verification"
+    description = "Ensures every non-empty Java package contains package-info.java"
+
+    val root = file("src/main/java")
+
+    doLast {
+        val violations = mutableListOf<String>()
+
+        root.walkTopDown()
+            .filter { it.isDirectory }
+            .forEach { dir ->
+                val javaFiles = dir.listFiles()?.filter { it.name.endsWith(".java") } ?: emptyList()
+                val hasPackageInfo = javaFiles.any { it.name == "package-info.java" }
+                val nonPackageInfoFiles = javaFiles.filter { it.name != "package-info.java" }
+
+                if (nonPackageInfoFiles.isNotEmpty() && !hasPackageInfo) {
+                    violations.add(dir.path)
+                }
+            }
+
+        if (violations.isNotEmpty()) {
+            throw GradleException("Missing package-info.java in:\n" + violations.joinToString("\n") { " - $it" })
+        }
+    }
 }
