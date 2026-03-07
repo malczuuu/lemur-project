@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.github.malczuuu.lemur.app.LemurApplication;
 import io.github.malczuuu.lemur.app.common.model.Identity;
 import io.github.malczuuu.lemur.app.core.PlayerModel;
+import io.github.malczuuu.lemur.app.core.RegisterPlayerModel;
 import io.github.malczuuu.lemur.app.domain.player.PlayerStatus;
 import io.github.malczuuu.lemur.app.infra.data.jpa.PlayerEntity;
 import io.github.malczuuu.lemur.app.infra.data.jpa.PlayerJpaRepository;
@@ -49,7 +50,7 @@ class PlayerBanE2eTests {
             .post()
             .uri("/api/v1/players")
             .contentType(MediaType.APPLICATION_JSON)
-            .body("{\"name\":\"charlie\"}")
+            .body(new RegisterPlayerModel("charlie"))
             .exchange()
             .returnResult();
 

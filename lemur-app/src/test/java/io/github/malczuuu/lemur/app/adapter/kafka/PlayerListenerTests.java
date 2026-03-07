@@ -2,6 +2,7 @@ package io.github.malczuuu.lemur.app.adapter.kafka;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 import io.github.malczuuu.lemur.app.LemurApplication;
 import io.github.malczuuu.lemur.app.common.model.Identity;
@@ -24,7 +25,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.client.ExchangeResult;
 import org.springframework.test.web.servlet.client.RestTestClient;
@@ -66,16 +66,17 @@ class PlayerListenerTests {
   }
 
   @Test
-  void registerPlayer_publishesEventAndLogsIt() {
+  void givenValidBody_whenRegisterPlayer_thenPublishesEventAndLogsIt() {
     ExchangeResult result =
         restClient
             .post()
             .uri("/api/v1/players")
-            .contentType(MediaType.APPLICATION_JSON)
+            .contentType(APPLICATION_JSON)
             .body(new RegisterPlayerModel("alice"))
             .exchange()
             .returnResult();
     assertThat(result.getStatus()).isEqualTo(HttpStatus.CREATED);
+
     String playerId = jsonMapper.readValue(result.getResponseBodyContent(), Identity.class).id();
 
     await()
@@ -83,15 +84,16 @@ class PlayerListenerTests {
         .pollInterval(Duration.ofMillis(300))
         .untilAsserted(
             () -> {
-              List<PlayerEventLogEntity> logs =
-                  logRepository.findAllByPlayerId(Long.parseLong(playerId));
+              long playerIdAsLong = Long.parseLong(playerId);
+              List<PlayerEventLogEntity> logs = logRepository.findAllByPlayerId(playerIdAsLong);
+
               assertThat(logs).hasSize(1);
               assertThat(logs.getFirst().getEventType()).isEqualTo("PlayerRegistered");
             });
   }
 
   @Test
-  void banPlayer_publishesBothEventsAndLogsThem() {
+  void givenExistingPlayer_whenBanPlayer_thenPublishesEventAndLogsIt() {
     ExchangeResult banResult =
         restClient.post().uri("/api/v1/players/{id}/ban", player.getId()).exchange().returnResult();
     assertThat(banResult.getStatus()).isEqualTo(HttpStatus.NO_CONTENT);
@@ -102,14 +104,14 @@ class PlayerListenerTests {
         .untilAsserted(
             () -> {
               List<PlayerEventLogEntity> logs = logRepository.findAllByPlayerId(player.getId());
-              assertThat(logs)
-                  .extracting(PlayerEventLogEntity::getEventType)
-                  .containsExactlyInAnyOrder("PlayerBanned");
+
+              assertThat(logs).extracting(PlayerEventLogEntity::getEventType).hasSize(1);
+              assertThat(logs.getFirst().getEventType()).isEqualTo("PlayerBanned");
             });
   }
 
   @Test
-  void unbanPlayer_publishesEventAndLogsIt() {
+  void givenBannedPlayer_whenUnbanPlayer_thenPublishesEventAndLogsIt() {
     player.setStatus(PlayerStatus.BANNED.getLabel());
     player = playerRepository.save(player);
 
@@ -127,9 +129,9 @@ class PlayerListenerTests {
         .untilAsserted(
             () -> {
               List<PlayerEventLogEntity> logs = logRepository.findAllByPlayerId(player.getId());
-              assertThat(logs)
-                  .extracting(PlayerEventLogEntity::getEventType)
-                  .containsExactlyInAnyOrder("PlayerBanned", "PlayerUnbanned");
+
+              assertThat(logs).extracting(PlayerEventLogEntity::getEventType).hasSize(1);
+              assertThat(logs.getFirst().getEventType()).isEqualTo("PlayerUnbanned");
             });
   }
 }

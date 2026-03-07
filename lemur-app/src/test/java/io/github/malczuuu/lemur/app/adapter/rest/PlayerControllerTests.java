@@ -1,10 +1,15 @@
 package io.github.malczuuu.lemur.app.adapter.rest;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON;
 
 import io.github.malczuuu.lemur.app.LemurApplication;
 import io.github.malczuuu.lemur.app.common.model.Content;
 import io.github.malczuuu.lemur.app.common.model.Identity;
+import io.github.malczuuu.lemur.app.core.PlayerModel;
+import io.github.malczuuu.lemur.app.core.RegisterPlayerModel;
 import io.github.malczuuu.lemur.app.domain.player.PlayerStatus;
 import io.github.malczuuu.lemur.app.infra.data.jpa.PlayerEntity;
 import io.github.malczuuu.lemur.app.infra.data.jpa.PlayerJpaRepository;
@@ -12,6 +17,9 @@ import io.github.malczuuu.lemur.testkit.annotation.KafkaAwareTest;
 import io.github.malczuuu.lemur.testkit.annotation.PostgresAwareTest;
 import io.github.problem4j.core.Problem;
 import java.net.URI;
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.AfterEach;
@@ -23,7 +31,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.client.ExchangeResult;
 import org.springframework.test.web.servlet.client.RestTestClient;
@@ -63,34 +70,100 @@ class PlayerControllerTests {
   }
 
   @Test
-  void getPlayers_whenEmpty_returnsEmptyContent() {
+  void givenMultiplePlayers_whenGetPlayers_thenReturnsSortedByCreatedDateAscThenIdAsc() {
     playerRepository.deleteAll();
+
+    String[] names = {"alpha", "beta", "gamma", "delta"};
+    List<PlayerEntity> saved = new ArrayList<>();
+    for (String name : names) {
+      PlayerEntity entity = new PlayerEntity();
+      entity.setName(name);
+      entity.setStatus(PlayerStatus.ACTIVE.getLabel());
+      saved.add(playerRepository.save(entity));
+      await().pollDelay(Duration.ofMillis(25)).until(() -> true);
+    }
+
     ExchangeResult response =
-        restClient
-            .get()
-            .uri("/api/v1/players")
-            .accept(MediaType.APPLICATION_JSON)
-            .exchange()
-            .returnResult();
+        restClient.get().uri("/api/v1/players").accept(APPLICATION_JSON).exchange().returnResult();
 
     assertThat(response.getStatus()).isEqualTo(HttpStatus.OK);
+    assertThat(response.getResponseHeaders().getContentType()).isEqualTo(APPLICATION_JSON);
+
+    Content<PlayerModel> body =
+        jsonMapper.readValue(response.getResponseBodyContent(), new TypeReference<>() {});
+    assertThat(body.content()).hasSize(saved.size());
+    for (int i = 0; i < saved.size(); i++) {
+      assertThat(body.content().get(i).id()).isEqualTo(String.valueOf(saved.get(i).getId()));
+    }
+  }
+
+  @Test
+  void givenNoPlayers_whenGetPlayers_thenReturnsEmptyContent() {
+    playerRepository.deleteAll();
+
+    ExchangeResult response =
+        restClient.get().uri("/api/v1/players").accept(APPLICATION_JSON).exchange().returnResult();
+
+    assertThat(response.getStatus()).isEqualTo(HttpStatus.OK);
+    assertThat(response.getResponseHeaders().getContentType()).isEqualTo(APPLICATION_JSON);
+
     Content<Object> body =
         jsonMapper.readValue(response.getResponseBodyContent(), new TypeReference<>() {});
     assertThat(body.content()).isEmpty();
   }
 
   @Test
-  void registerPlayer_withValidBody_returns201AndLocation() {
+  void givenExistingId_whenGetPlayer_thenReturns200AndPlayer() {
+    ExchangeResult response =
+        restClient
+            .get()
+            .uri("/api/v1/players/{id}", player.getId())
+            .accept(APPLICATION_JSON)
+            .exchange()
+            .returnResult();
+
+    assertThat(response.getStatus()).isEqualTo(HttpStatus.OK);
+    assertThat(response.getResponseHeaders().getContentType()).isEqualTo(APPLICATION_JSON);
+
+    PlayerModel body = jsonMapper.readValue(response.getResponseBodyContent(), PlayerModel.class);
+    assertThat(body.id()).isEqualTo(String.valueOf(player.getId()));
+    assertThat(body.name()).isEqualTo(player.getName());
+    assertThat(body.rating()).isEqualTo(player.getRating());
+    assertThat(body.status().getLabel()).isEqualTo(player.getStatus());
+  }
+
+  @Test
+  void givenUnknownId_whenGetPlayer_thenReturns404() {
+    ExchangeResult response =
+        restClient
+            .get()
+            .uri("/api/v1/players/{id}", "317204561")
+            .accept(APPLICATION_JSON)
+            .exchange()
+            .returnResult();
+
+    assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND);
+    assertThat(response.getResponseHeaders().getContentType()).isEqualTo(APPLICATION_PROBLEM_JSON);
+
+    Problem problem = jsonMapper.readValue(response.getResponseBodyContent(), Problem.class);
+    assertThat(problem.getType()).isEqualTo(URI.create("PLAYER_NOT_FOUND"));
+    assertThat(problem.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
+  }
+
+  @Test
+  void givenValidBody_whenRegisterPlayer_thenReturns201AndLocation() {
     ExchangeResult response =
         restClient
             .post()
             .uri("/api/v1/players")
-            .contentType(MediaType.APPLICATION_JSON)
-            .body("{\"name\":\"alice\",\"displayName\":\"Alice\"}")
+            .contentType(APPLICATION_JSON)
+            .body(new RegisterPlayerModel("Alice"))
             .exchange()
             .returnResult();
 
     assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED);
+    assertThat(response.getResponseHeaders().getContentType()).isEqualTo(APPLICATION_JSON);
+
     assertThat(response.getResponseHeaders().getLocation()).isNotNull();
     assertThat(response.getResponseHeaders().getLocation().getPath())
         .startsWith("/api/v1/players/");
@@ -100,17 +173,19 @@ class PlayerControllerTests {
   }
 
   @Test
-  void registerPlayer_withMissingName_returns400() {
+  void givenMissingName_whenRegisterPlayer_thenReturns400() {
     ExchangeResult response =
         restClient
             .post()
             .uri("/api/v1/players")
-            .contentType(MediaType.APPLICATION_JSON)
+            .contentType(APPLICATION_JSON)
             .body("{}")
             .exchange()
             .returnResult();
 
     assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST);
+    assertThat(response.getResponseHeaders().getContentType()).isEqualTo(APPLICATION_PROBLEM_JSON);
+
     Problem problem = jsonMapper.readValue(response.getResponseBodyContent(), Problem.class);
     assertThat(problem.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     assertThat(problem.getExtensionValue("errors"))
@@ -119,7 +194,7 @@ class PlayerControllerTests {
   }
 
   @Test
-  void banPlayer_existingPlayer_returns204() {
+  void givenExistingPlayer_whenBanPlayer_thenReturns204() {
     ExchangeResult response =
         restClient.post().uri("/api/v1/players/{id}/ban", player.getId()).exchange().returnResult();
 
@@ -127,23 +202,7 @@ class PlayerControllerTests {
   }
 
   @Test
-  void getPlayer_unknownId_returns404() {
-    ExchangeResult response =
-        restClient
-            .get()
-            .uri("/api/v1/players/{id}", "317204561")
-            .accept(MediaType.APPLICATION_JSON)
-            .exchange()
-            .returnResult();
-
-    assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND);
-    Problem problem = jsonMapper.readValue(response.getResponseBodyContent(), Problem.class);
-    assertThat(problem.getType()).isEqualTo(URI.create("PLAYER_NOT_FOUND"));
-    assertThat(problem.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
-  }
-
-  @Test
-  void banPlayer_alreadyBanned_returns409() {
+  void givenAlreadyBannedPlayer_whenBanPlayer_thenReturns409() {
     player.setStatus(PlayerStatus.BANNED.getLabel());
     player = playerRepository.save(player);
 
@@ -151,13 +210,15 @@ class PlayerControllerTests {
         restClient.post().uri("/api/v1/players/{id}/ban", player.getId()).exchange().returnResult();
 
     assertThat(response.getStatus()).isEqualTo(HttpStatus.CONFLICT);
+    assertThat(response.getResponseHeaders().getContentType()).isEqualTo(APPLICATION_PROBLEM_JSON);
+
     Problem problem = jsonMapper.readValue(response.getResponseBodyContent(), Problem.class);
     assertThat(problem.getType()).isEqualTo(URI.create("PLAYER_ALREADY_BANNED"));
     assertThat(problem.getStatus()).isEqualTo(HttpStatus.CONFLICT.value());
   }
 
   @Test
-  void unbanPlayer_bannedPlayer_returns204() {
+  void givenBannedPlayer_whenUnbanPlayer_thenReturns204() {
     player.setStatus(PlayerStatus.BANNED.getLabel());
     player = playerRepository.save(player);
 
@@ -172,8 +233,7 @@ class PlayerControllerTests {
   }
 
   @Test
-  void unbanPlayer_notBannedPlayer_returns409() {
-
+  void givenNotBannedPlayer_whenUnbanPlayer_thenReturns409() {
     ExchangeResult response =
         restClient
             .delete()
@@ -182,21 +242,10 @@ class PlayerControllerTests {
             .returnResult();
 
     assertThat(response.getStatus()).isEqualTo(HttpStatus.CONFLICT);
+    assertThat(response.getResponseHeaders().getContentType()).isEqualTo(APPLICATION_PROBLEM_JSON);
+
     Problem problem = jsonMapper.readValue(response.getResponseBodyContent(), Problem.class);
     assertThat(problem.getType()).isEqualTo(URI.create("PLAYER_NOT_BANNED"));
     assertThat(problem.getStatus()).isEqualTo(HttpStatus.CONFLICT.value());
-  }
-
-  private String registerPlayer(String username, String displayName) {
-    ExchangeResult result =
-        restClient
-            .post()
-            .uri("/api/v1/players")
-            .contentType(MediaType.APPLICATION_JSON)
-            .body("{\"name\":\"" + username + "\",\"displayName\":\"" + displayName + "\"}")
-            .exchange()
-            .returnResult();
-    assertThat(result.getStatus()).isEqualTo(HttpStatus.CREATED);
-    return jsonMapper.readValue(result.getResponseBodyContent(), Identity.class).id();
   }
 }
