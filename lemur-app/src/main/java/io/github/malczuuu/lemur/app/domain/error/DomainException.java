@@ -1,7 +1,9 @@
 package io.github.malczuuu.lemur.app.domain.error;
 
+import lombok.Getter;
 import org.jspecify.annotations.Nullable;
 
+@Getter
 public class DomainException extends RuntimeException implements ErrorAware {
 
   private final ErrorType error;
@@ -17,14 +19,14 @@ public class DomainException extends RuntimeException implements ErrorAware {
     this.detail = null;
   }
 
-  public DomainException(ErrorType error, String detail) {
-    super(error.getType() + ": " + detail);
+  public DomainException(ErrorType error, @Nullable String detail) {
+    super(makeDefaultMessage(error, detail));
     this.error = error;
     this.detail = detail;
   }
 
-  public DomainException(ErrorType error, String detail, Throwable cause) {
-    super(error.getType() + ": " + detail, cause);
+  public DomainException(ErrorType error, @Nullable String detail, Throwable cause) {
+    super(makeDefaultMessage(error, detail), cause);
     this.error = error;
     this.detail = detail;
   }
@@ -37,22 +39,16 @@ public class DomainException extends RuntimeException implements ErrorAware {
 
   protected DomainException(
       ErrorType error,
-      String detail,
+      @Nullable String detail,
       Throwable cause,
       boolean enableSuppression,
       boolean writableStackTrace) {
-    super(error.getType() + ": " + detail, cause, enableSuppression, writableStackTrace);
+    super(makeDefaultMessage(error, detail), cause, enableSuppression, writableStackTrace);
     this.error = error;
     this.detail = detail;
   }
 
-  @Override
-  public ErrorType getError() {
-    return error;
-  }
-
-  @Override
-  public @Nullable String getDetail() {
-    return detail;
+  protected static String makeDefaultMessage(ErrorType error, @Nullable String detail) {
+    return error.getType() + ": " + detail;
   }
 }

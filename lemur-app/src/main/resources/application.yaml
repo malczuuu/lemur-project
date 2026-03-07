@@ -46,7 +46,7 @@ management:
 lemur-app:
   kafka:
     topic:
-      thing-events: lemur-app-thing-events
+      player-events: lemur-app-player-events
 
 problem4j:
   detail-format: lowercase

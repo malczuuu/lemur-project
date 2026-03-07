@@ -23,8 +23,8 @@ public class KafkaContainerConfiguration {
 
   @Bean
   public KafkaAdmin.NewTopics lemurAppTopics(
-      @Value("${lemur-app.kafka.topic.thing-events}") String thingEventsTopic) {
+      @Value("${lemur-app.kafka.topic.player-events}") String playerEventsTopic) {
     return new KafkaAdmin.NewTopics(
-        TopicBuilder.name(thingEventsTopic).partitions(5).replicas(1).build());
+        TopicBuilder.name(playerEventsTopic).partitions(5).replicas(1).build());
   }
 }

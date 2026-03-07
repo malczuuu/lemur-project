@@ -1,5 +1,8 @@
+import internal.lombok
+
 plugins {
     id("internal.errorprone-convention")
+    id("internal.jacoco-convention")
     id("internal.spring-app-convention")
 }
 
@@ -25,12 +28,15 @@ dependencies {
 
     testImplementation(project(":lemur-libs:lemur-migration"))
     testImplementation(project(":lemur-libs:lemur-testkit"))
+    testImplementation(libs.awaitility)
     testImplementation(libs.spring.boot.starter.actuator.test)
     testRuntimeOnly(libs.junit.platform.launcher)
     testRuntimeOnly(libs.postgresql)
 
     errorprone(libs.errorprone.core)
     errorprone(libs.nullaway)
+
+    lombok(libs.lombok)
 }
 
 configurations.all {

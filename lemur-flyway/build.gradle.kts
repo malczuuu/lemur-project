@@ -1,5 +1,6 @@
 plugins {
     id("internal.errorprone-convention")
+    id("internal.jacoco-convention")
     id("internal.spring-app-convention")
 }
 

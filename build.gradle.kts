@@ -1,9 +1,28 @@
 import com.diffplug.spotless.LineEnding
+import org.gradle.kotlin.dsl.project
 
 plugins {
     id("internal.common-convention")
     id("internal.idea-convention")
+    id("jacoco-report-aggregation")
     alias(libs.plugins.spotless)
+}
+
+dependencies {
+    jacocoAggregation(project(":lemur-app"))
+    jacocoAggregation(project(":lemur-flyway"))
+    jacocoAggregation(project(":lemur-libs:lemur-log4j2"))
+    jacocoAggregation(project(":lemur-libs:lemur-migration"))
+    jacocoAggregation(project(":lemur-libs:lemur-model"))
+    jacocoAggregation(project(":lemur-libs:lemur-testkit"))
+}
+
+reporting {
+    reports {
+        register<JacocoCoverageReport>("testCodeCoverageReport") {
+            testSuiteName = "test"
+        }
+    }
 }
 
 spotless {
@@ -60,6 +79,10 @@ spotless {
         endWithNewline()
         lineEndings = LineEnding.UNIX
     }
+}
+
+tasks.named<Task>("check") {
+    dependsOn(tasks.named<JacocoReport>("testCodeCoverageReport"))
 }
 
 defaultTasks("spotlessApply", "build")

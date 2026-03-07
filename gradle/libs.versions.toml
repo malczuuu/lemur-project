@@ -1,10 +1,12 @@
 [versions]
+awaitility = "4.2.2"
 errorprone = "2.48.0"
 errorprone-plugin = "5.1.0"
 idea-ext = "1.4.1"
 jackson = "3.1.0"
 jspecify = "1.0.0"
 junit = "6.0.3"
+lombok = "1.18.42"
 nullaway = "0.13.1"
 problem4j-spring = "2.2.1"
 spotless = "8.3.0"
@@ -70,6 +72,8 @@ testcontainers-postgresql = { module = "org.testcontainers:testcontainers-postgr
 springdoc-openapi-starter-webmvc-ui = { module = "org.springdoc:springdoc-openapi-starter-webmvc-ui" }
 
 # direct dependencies
+awaitility = { module = "org.awaitility:awaitility", version.ref = "awaitility" }
 errorprone-core = { module = "com.google.errorprone:error_prone_core", version.ref = "errorprone" }
 jspecify = { module = "org.jspecify:jspecify", version.ref = "jspecify" }
+lombok = { module = "org.projectlombok:lombok", version.ref = "lombok" }
 nullaway = { module = "com.uber.nullaway:nullaway", version.ref = "nullaway" }

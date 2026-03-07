@@ -30,16 +30,6 @@ A template Spring Boot project with a dummy reference implementation of a REST e
 | `lemur-libs/lemur-model`     | Shared REST API and Kafka message models        |
 | `lemur-libs/lemur-testkit`   | Shared test utilities and Testcontainers setup  |
 
-## Reference Implementation
-
-The project includes a simple `Thing` resource as a reference CRUD endpoint:
-
-- `GET /api/things` — list all things
-- `GET /api/things/{id}` — get a thing by ID
-- `POST /api/things` — create a new thing
-
-This serves as a starting point — replace or extend it with your own domain.
-
 ## Getting Started
 
 ### Prerequisites
