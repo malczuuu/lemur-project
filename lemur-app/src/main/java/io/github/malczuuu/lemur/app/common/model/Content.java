@@ -1,12 +1,11 @@
-package io.github.malczuuu.lemur.model;
+package io.github.malczuuu.lemur.app.common.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public record Content<T>(@JsonProperty("content") List<T> content) {
+public record Content<T>(List<T> content) {
 
   public Content {
     content = List.copyOf(content);

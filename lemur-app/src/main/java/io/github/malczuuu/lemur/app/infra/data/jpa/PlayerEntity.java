@@ -55,7 +55,7 @@ public class PlayerEntity implements Persistable<@NonNull Long> {
 
   @Version
   @Column(name = "player_version", nullable = false)
-  private Long version = 0L;
+  private Long version;
 
   public PlayerEntity() {}
 

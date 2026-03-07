@@ -6,5 +6,7 @@ public interface PlayerEventGateway {
 
   void publish(PlayerBanned event);
 
+  void publish(PlayerUnbanned event);
+
   void publish(PlayerRatingChanged event);
 }

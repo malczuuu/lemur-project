@@ -10,7 +10,6 @@ dependencies {
     implementation(platform(project(":lemur-libs:lemur-bom")))
 
     implementation(project(":lemur-libs:lemur-log4j2"))
-    implementation(project(":lemur-libs:lemur-model"))
 
     implementation(libs.problem4j.spring.webmvc)
 

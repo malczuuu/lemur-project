@@ -1,10 +1,10 @@
-package io.github.malczuuu.lemur.model.kafka;
+package io.github.malczuuu.lemur.app.common.message;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
-public final class KafkaHeader {
+public final class MessageHeader {
 
   public static final String EVENT_TYPE_HEADER = "event_type";
 
@@ -13,5 +13,5 @@ public final class KafkaHeader {
         .map(header -> new String(header.value(), StandardCharsets.UTF_8));
   }
 
-  private KafkaHeader() {}
+  private MessageHeader() {}
 }

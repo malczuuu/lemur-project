@@ -54,6 +54,13 @@ public class Player implements DomainObject {
     status = PlayerStatus.BANNED;
   }
 
+  public void unban() {
+    if (status == PlayerStatus.ACTIVE) {
+      throw new PlayerNotBannedException();
+    }
+    status = PlayerStatus.ACTIVE;
+  }
+
   public void adjustRating(int delta) {
     this.rating = Math.max(0, this.rating + delta);
   }

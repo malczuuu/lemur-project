@@ -1,14 +1,16 @@
 package io.github.malczuuu.lemur.app.infra.kafka;
 
-import static io.github.malczuuu.lemur.model.kafka.KafkaHeader.EVENT_TYPE_HEADER;
+import static io.github.malczuuu.lemur.app.common.message.MessageHeader.EVENT_TYPE_HEADER;
 
+import io.github.malczuuu.lemur.app.common.message.PlayerBannedEvent;
+import io.github.malczuuu.lemur.app.common.message.PlayerRatingChangedEvent;
+import io.github.malczuuu.lemur.app.common.message.PlayerRegisteredEvent;
+import io.github.malczuuu.lemur.app.common.message.PlayerUnbannedEvent;
 import io.github.malczuuu.lemur.app.domain.player.PlayerBanned;
 import io.github.malczuuu.lemur.app.domain.player.PlayerEventGateway;
 import io.github.malczuuu.lemur.app.domain.player.PlayerRatingChanged;
 import io.github.malczuuu.lemur.app.domain.player.PlayerRegistered;
-import io.github.malczuuu.lemur.model.message.PlayerBannedEvent;
-import io.github.malczuuu.lemur.model.message.PlayerRatingChangedEvent;
-import io.github.malczuuu.lemur.model.message.PlayerRegisteredEvent;
+import io.github.malczuuu.lemur.app.domain.player.PlayerUnbanned;
 import io.micrometer.core.instrument.MeterRegistry;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -31,6 +33,10 @@ class KafkaPlayerEventGateway implements PlayerEventGateway {
       "lemur.kafka.player.registered.publish.failure";
   private static final String PLAYER_BANNED_SUCCESS = "lemur.kafka.player.banned.publish.success";
   private static final String PLAYER_BANNED_FAILURE = "lemur.kafka.player.banned.publish.failure";
+  private static final String PLAYER_UNBANNED_SUCCESS =
+      "lemur.kafka.player.unbanned.publish.success";
+  private static final String PLAYER_UNBANNED_FAILURE =
+      "lemur.kafka.player.unbanned.publish.failure";
   private static final String PLAYER_RATING_CHANGED_SUCCESS =
       "lemur.kafka.player.rating_changed.publish.success";
   private static final String PLAYER_RATING_CHANGED_FAILURE =
@@ -77,6 +83,19 @@ class KafkaPlayerEventGateway implements PlayerEventGateway {
     } catch (Exception e) {
       log.error("Failed to publish {} to Kafka", eventTypeName, e);
       meterRegistry.counter(PLAYER_BANNED_FAILURE).increment();
+    }
+  }
+
+  @Override
+  public void publish(PlayerUnbanned event) {
+    String eventTypeName = "PlayerUnbanned";
+    try {
+      PlayerUnbannedEvent message = new PlayerUnbannedEvent(event.playerId());
+      send(event.playerId(), eventTypeName, jsonMapper.writeValueAsString(message));
+      meterRegistry.counter(PLAYER_UNBANNED_SUCCESS).increment();
+    } catch (Exception e) {
+      log.error("Failed to publish {} to Kafka", eventTypeName, e);
+      meterRegistry.counter(PLAYER_UNBANNED_FAILURE).increment();
     }
   }
 

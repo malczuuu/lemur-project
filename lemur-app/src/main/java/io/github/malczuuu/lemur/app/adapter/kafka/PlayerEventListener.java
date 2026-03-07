@@ -1,10 +1,10 @@
 package io.github.malczuuu.lemur.app.adapter.kafka;
 
-import static io.github.malczuuu.lemur.model.kafka.KafkaHeader.EVENT_TYPE_HEADER;
+import static io.github.malczuuu.lemur.app.common.message.MessageHeader.EVENT_TYPE_HEADER;
 
+import io.github.malczuuu.lemur.app.common.message.MessageHeader;
 import io.github.malczuuu.lemur.app.infra.data.jpa.PlayerEventLogEntity;
 import io.github.malczuuu.lemur.app.infra.data.jpa.PlayerEventLogJpaRepository;
-import io.github.malczuuu.lemur.model.kafka.KafkaHeader;
 import java.time.Clock;
 import java.time.Instant;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -35,7 +35,7 @@ public class PlayerEventListener {
   @KafkaListener(topics = {"${lemur-app.kafka.topic.player-events}"})
   public void onPlayerEvent(ConsumerRecord<String, String> record) {
     try {
-      String eventType = KafkaHeader.findHeader(record, EVENT_TYPE_HEADER).orElse("unknown");
+      String eventType = MessageHeader.findHeader(record, EVENT_TYPE_HEADER).orElse("unknown");
       JsonNode node = jsonMapper.readTree(record.value());
       String playerId = node.path("playerId").asString();
 

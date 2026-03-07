@@ -3,11 +3,11 @@ package io.github.malczuuu.lemur.app.e2e;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.github.malczuuu.lemur.app.LemurApplication;
+import io.github.malczuuu.lemur.app.common.model.Identity;
+import io.github.malczuuu.lemur.app.core.PlayerModel;
 import io.github.malczuuu.lemur.app.domain.player.PlayerStatus;
 import io.github.malczuuu.lemur.app.infra.data.jpa.PlayerEntity;
 import io.github.malczuuu.lemur.app.infra.data.jpa.PlayerJpaRepository;
-import io.github.malczuuu.lemur.model.Identity;
-import io.github.malczuuu.lemur.model.rest.PlayerDto;
 import io.github.malczuuu.lemur.testkit.annotation.KafkaAwareTest;
 import io.github.malczuuu.lemur.testkit.annotation.PostgresAwareTest;
 import io.github.problem4j.core.Problem;
@@ -76,9 +76,9 @@ class PlayerBanE2eTests {
     assertThat(result.getStatus()).isEqualTo(HttpStatus.OK);
     assertThat(result.getResponseHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
 
-    PlayerDto player = jsonMapper.readValue(result.getResponseBodyContent(), PlayerDto.class);
+    PlayerModel player = jsonMapper.readValue(result.getResponseBodyContent(), PlayerModel.class);
     assertThat(player.name()).isEqualTo("charlie");
-    assertThat(player.status()).isEqualTo(PlayerStatus.ACTIVE.getLabel());
+    assertThat(player.status()).isEqualTo(PlayerStatus.ACTIVE);
   }
 
   private void banPlayerStep(String playerId) {
@@ -103,8 +103,8 @@ class PlayerBanE2eTests {
     assertThat(result.getStatus()).isEqualTo(HttpStatus.OK);
     assertThat(result.getResponseHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
 
-    PlayerDto banned = jsonMapper.readValue(result.getResponseBodyContent(), PlayerDto.class);
-    assertThat(banned.status()).isEqualTo(PlayerStatus.BANNED.getLabel());
+    PlayerModel banned = jsonMapper.readValue(result.getResponseBodyContent(), PlayerModel.class);
+    assertThat(banned.status()).isEqualTo(PlayerStatus.BANNED);
   }
 
   private void tryBanningAgainStep(String playerId) {

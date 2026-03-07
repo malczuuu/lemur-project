@@ -4,13 +4,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 
 import io.github.malczuuu.lemur.app.LemurApplication;
+import io.github.malczuuu.lemur.app.common.model.Identity;
+import io.github.malczuuu.lemur.app.core.RegisterPlayerModel;
 import io.github.malczuuu.lemur.app.domain.player.PlayerStatus;
 import io.github.malczuuu.lemur.app.infra.data.jpa.PlayerEntity;
 import io.github.malczuuu.lemur.app.infra.data.jpa.PlayerEventLogEntity;
 import io.github.malczuuu.lemur.app.infra.data.jpa.PlayerEventLogJpaRepository;
 import io.github.malczuuu.lemur.app.infra.data.jpa.PlayerJpaRepository;
-import io.github.malczuuu.lemur.model.Identity;
-import io.github.malczuuu.lemur.model.rest.RegisterPlayerDto;
 import io.github.malczuuu.lemur.testkit.annotation.KafkaAwareTest;
 import io.github.malczuuu.lemur.testkit.annotation.PostgresAwareTest;
 import java.time.Duration;
@@ -18,10 +18,8 @@ import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -38,7 +36,6 @@ import tools.jackson.databind.json.JsonMapper;
 @SpringBootTest(classes = {LemurApplication.class})
 @AutoConfigureRestTestClient
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class PlayerListenerTests {
 
   @Autowired private RestTestClient restClient;
@@ -75,7 +72,7 @@ class PlayerListenerTests {
             .post()
             .uri("/api/v1/players")
             .contentType(MediaType.APPLICATION_JSON)
-            .body(new RegisterPlayerDto("alice"))
+            .body(new RegisterPlayerModel("alice"))
             .exchange()
             .returnResult();
     assertThat(result.getStatus()).isEqualTo(HttpStatus.CREATED);
@@ -95,10 +92,8 @@ class PlayerListenerTests {
 
   @Test
   void banPlayer_publishesBothEventsAndLogsThem() {
-    String playerId = player.getId().toString();
-
     ExchangeResult banResult =
-        restClient.post().uri("/api/v1/players/" + playerId + "/ban").exchange().returnResult();
+        restClient.post().uri("/api/v1/players/{id}/ban", player.getId()).exchange().returnResult();
     assertThat(banResult.getStatus()).isEqualTo(HttpStatus.NO_CONTENT);
 
     await()
@@ -110,6 +105,31 @@ class PlayerListenerTests {
               assertThat(logs)
                   .extracting(PlayerEventLogEntity::getEventType)
                   .containsExactlyInAnyOrder("PlayerBanned");
+            });
+  }
+
+  @Test
+  void unbanPlayer_publishesEventAndLogsIt() {
+    player.setStatus(PlayerStatus.BANNED.getLabel());
+    player = playerRepository.save(player);
+
+    ExchangeResult unbanResult =
+        restClient
+            .delete()
+            .uri("/api/v1/players/{id}/ban", player.getId())
+            .exchange()
+            .returnResult();
+    assertThat(unbanResult.getStatus()).isEqualTo(HttpStatus.NO_CONTENT);
+
+    await()
+        .atMost(Duration.ofSeconds(15))
+        .pollInterval(Duration.ofMillis(300))
+        .untilAsserted(
+            () -> {
+              List<PlayerEventLogEntity> logs = logRepository.findAllByPlayerId(player.getId());
+              assertThat(logs)
+                  .extracting(PlayerEventLogEntity::getEventType)
+                  .containsExactlyInAnyOrder("PlayerBanned", "PlayerUnbanned");
             });
   }
 }

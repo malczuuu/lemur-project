@@ -2,6 +2,7 @@ package io.github.malczuuu.lemur.app.infra.data.jpa;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -14,6 +15,7 @@ import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.NullUnmarked;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.domain.Persistable;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Getter
 @Setter
@@ -23,6 +25,7 @@ import org.springframework.data.domain.Persistable;
     name = "seq_player_event_logs_log_id",
     sequenceName = "seq_player_event_logs_log_id",
     allocationSize = 1)
+@EntityListeners({AuditingEntityListener.class})
 @NullUnmarked
 public class PlayerEventLogEntity implements Persistable<@NonNull Long> {
 
@@ -35,10 +38,10 @@ public class PlayerEventLogEntity implements Persistable<@NonNull Long> {
   private Long playerId;
 
   @Column(name = "log_event_type", length = 100, nullable = false)
-  private String eventType = "";
+  private String eventType;
 
   @Column(name = "log_payload", nullable = false)
-  private String payload = "";
+  private String payload;
 
   @Column(name = "log_published_date", nullable = false)
   private Instant publishedDate;
@@ -48,7 +51,7 @@ public class PlayerEventLogEntity implements Persistable<@NonNull Long> {
 
   @CreatedDate
   @Column(name = "log_created_date", nullable = false)
-  private Instant createdDate = Instant.now();
+  private Instant createdDate;
 
   public PlayerEventLogEntity() {}
 

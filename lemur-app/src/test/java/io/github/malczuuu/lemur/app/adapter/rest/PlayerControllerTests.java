@@ -3,9 +3,11 @@ package io.github.malczuuu.lemur.app.adapter.rest;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.github.malczuuu.lemur.app.LemurApplication;
+import io.github.malczuuu.lemur.app.common.model.Content;
+import io.github.malczuuu.lemur.app.common.model.Identity;
+import io.github.malczuuu.lemur.app.domain.player.PlayerStatus;
+import io.github.malczuuu.lemur.app.infra.data.jpa.PlayerEntity;
 import io.github.malczuuu.lemur.app.infra.data.jpa.PlayerJpaRepository;
-import io.github.malczuuu.lemur.model.Content;
-import io.github.malczuuu.lemur.model.Identity;
 import io.github.malczuuu.lemur.testkit.annotation.KafkaAwareTest;
 import io.github.malczuuu.lemur.testkit.annotation.PostgresAwareTest;
 import io.github.problem4j.core.Problem;
@@ -14,6 +16,7 @@ import java.util.Map;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,9 +42,19 @@ class PlayerControllerTests {
   @Autowired private PlayerJpaRepository playerRepository;
   @Autowired private JsonMapper jsonMapper;
 
+  private PlayerEntity player;
+
   @BeforeAll
   void beforeAll() {
     playerRepository.deleteAll();
+  }
+
+  @BeforeEach
+  void beforeEach() {
+    player = new PlayerEntity();
+    player.setName("john.doe");
+    player.setStatus(PlayerStatus.ACTIVE.getLabel());
+    player = playerRepository.save(player);
   }
 
   @AfterEach
@@ -51,6 +64,7 @@ class PlayerControllerTests {
 
   @Test
   void getPlayers_whenEmpty_returnsEmptyContent() {
+    playerRepository.deleteAll();
     ExchangeResult response =
         restClient
             .get()
@@ -77,6 +91,7 @@ class PlayerControllerTests {
             .returnResult();
 
     assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED);
+    assertThat(response.getResponseHeaders().getLocation()).isNotNull();
     assertThat(response.getResponseHeaders().getLocation().getPath())
         .startsWith("/api/v1/players/");
 
@@ -85,13 +100,13 @@ class PlayerControllerTests {
   }
 
   @Test
-  void registerPlayer_withMissingUsername_returns400() {
+  void registerPlayer_withMissingName_returns400() {
     ExchangeResult response =
         restClient
             .post()
             .uri("/api/v1/players")
             .contentType(MediaType.APPLICATION_JSON)
-            .body("{\"displayName\":\"Alice\"}")
+            .body("{}")
             .exchange()
             .returnResult();
 
@@ -105,10 +120,8 @@ class PlayerControllerTests {
 
   @Test
   void banPlayer_existingPlayer_returns204() {
-    String playerId = registerPlayer("bob", "Bob");
-
     ExchangeResult response =
-        restClient.post().uri("/api/v1/players/" + playerId + "/ban").exchange().returnResult();
+        restClient.post().uri("/api/v1/players/{id}/ban", player.getId()).exchange().returnResult();
 
     assertThat(response.getStatus()).isEqualTo(HttpStatus.NO_CONTENT);
   }
@@ -118,7 +131,7 @@ class PlayerControllerTests {
     ExchangeResult response =
         restClient
             .get()
-            .uri("/api/v1/players/does-not-exist")
+            .uri("/api/v1/players/{id}", "317204561")
             .accept(MediaType.APPLICATION_JSON)
             .exchange()
             .returnResult();
@@ -131,15 +144,46 @@ class PlayerControllerTests {
 
   @Test
   void banPlayer_alreadyBanned_returns409() {
-    String playerId = registerPlayer("carol", "Carol");
-    restClient.post().uri("/api/v1/players/" + playerId + "/ban").exchange().returnResult();
+    player.setStatus(PlayerStatus.BANNED.getLabel());
+    player = playerRepository.save(player);
 
     ExchangeResult response =
-        restClient.post().uri("/api/v1/players/" + playerId + "/ban").exchange().returnResult();
+        restClient.post().uri("/api/v1/players/{id}/ban", player.getId()).exchange().returnResult();
 
     assertThat(response.getStatus()).isEqualTo(HttpStatus.CONFLICT);
     Problem problem = jsonMapper.readValue(response.getResponseBodyContent(), Problem.class);
     assertThat(problem.getType()).isEqualTo(URI.create("PLAYER_ALREADY_BANNED"));
+    assertThat(problem.getStatus()).isEqualTo(HttpStatus.CONFLICT.value());
+  }
+
+  @Test
+  void unbanPlayer_bannedPlayer_returns204() {
+    player.setStatus(PlayerStatus.BANNED.getLabel());
+    player = playerRepository.save(player);
+
+    ExchangeResult response =
+        restClient
+            .delete()
+            .uri("/api/v1/players/{id}/ban", player.getId())
+            .exchange()
+            .returnResult();
+
+    assertThat(response.getStatus()).isEqualTo(HttpStatus.NO_CONTENT);
+  }
+
+  @Test
+  void unbanPlayer_notBannedPlayer_returns409() {
+
+    ExchangeResult response =
+        restClient
+            .delete()
+            .uri("/api/v1/players/{id}/ban", player.getId())
+            .exchange()
+            .returnResult();
+
+    assertThat(response.getStatus()).isEqualTo(HttpStatus.CONFLICT);
+    Problem problem = jsonMapper.readValue(response.getResponseBodyContent(), Problem.class);
+    assertThat(problem.getType()).isEqualTo(URI.create("PLAYER_NOT_BANNED"));
     assertThat(problem.getStatus()).isEqualTo(HttpStatus.CONFLICT.value());
   }
 

@@ -14,14 +14,12 @@ dependencies {
     jacocoAggregation(project(":lemur-flyway"))
     jacocoAggregation(project(":lemur-libs:lemur-log4j2"))
     jacocoAggregation(project(":lemur-libs:lemur-migration"))
-    jacocoAggregation(project(":lemur-libs:lemur-model"))
     jacocoAggregation(project(":lemur-libs:lemur-testkit"))
 
     testReportAggregation(project(":lemur-app"))
     testReportAggregation(project(":lemur-flyway"))
     testReportAggregation(project(":lemur-libs:lemur-log4j2"))
     testReportAggregation(project(":lemur-libs:lemur-migration"))
-    testReportAggregation(project(":lemur-libs:lemur-model"))
     testReportAggregation(project(":lemur-libs:lemur-testkit"))
 }
 
