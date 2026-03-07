@@ -18,18 +18,6 @@ A template Spring Boot project with a dummy reference implementation of a REST e
 - **Testcontainers** for integration tests
 - **Problem4J** for RFC 9457 Problem Details error responses
 
-## Project Structure
-
-| Module                       | Description                                     |
-|------------------------------|-------------------------------------------------|
-| `lemur-app`                  | Main application with REST endpoints and domain |
-| `lemur-flyway`               | Standalone Flyway runner                        |
-| `lemur-libs/lemur-bom`       | Bill of Materials for dependency management     |
-| `lemur-libs/lemur-log4j2`    | Log4j 2 configuration (XML resource file)       |
-| `lemur-libs/lemur-migration` | Database migration scripts                      |
-| `lemur-libs/lemur-model`     | Shared REST API and Kafka message models        |
-| `lemur-libs/lemur-testkit`   | Shared test utilities and Testcontainers setup  |
-
 ## Getting Started
 
 ### Prerequisites
