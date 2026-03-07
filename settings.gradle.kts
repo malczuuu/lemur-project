@@ -47,18 +47,3 @@ fun collectProjectNames(project: ProjectDescriptor, names: MutableMap<String, Mu
     names.computeIfAbsent(project.name) { mutableListOf() }.add(project)
     project.children.forEach { collectProjectNames(it, names) }
 }
-
-/**
- * Changes build file names of all child projects to `<project-name>.gradle.kts`.
- */
-fun changeChildrenBuildFileNames(project: ProjectDescriptor) {
-    project.children.forEach { changeChildrenBuildFileName(it) }
-}
-
-/**
- * Changes build file name of the given project and all its children to `<project-name>.gradle.kts`.
- */
-fun changeChildrenBuildFileName(project: ProjectDescriptor) {
-    project.buildFileName = "${project.name}.gradle.kts"
-    project.children.forEach { child -> changeChildrenBuildFileName(child) }
-}
