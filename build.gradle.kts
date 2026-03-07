@@ -5,6 +5,7 @@ plugins {
     id("internal.common-convention")
     id("internal.idea-convention")
     id("jacoco-report-aggregation")
+    id("test-report-aggregation")
     alias(libs.plugins.spotless)
 }
 
@@ -15,11 +16,22 @@ dependencies {
     jacocoAggregation(project(":lemur-libs:lemur-migration"))
     jacocoAggregation(project(":lemur-libs:lemur-model"))
     jacocoAggregation(project(":lemur-libs:lemur-testkit"))
+
+    testReportAggregation(project(":lemur-app"))
+    testReportAggregation(project(":lemur-flyway"))
+    testReportAggregation(project(":lemur-libs:lemur-log4j2"))
+    testReportAggregation(project(":lemur-libs:lemur-migration"))
+    testReportAggregation(project(":lemur-libs:lemur-model"))
+    testReportAggregation(project(":lemur-libs:lemur-testkit"))
 }
 
 reporting {
     reports {
         register<JacocoCoverageReport>("testCodeCoverageReport") {
+            testSuiteName = "test"
+        }
+
+        register<AggregateTestReport>("testAggregateTestReport") {
             testSuiteName = "test"
         }
     }
@@ -83,6 +95,7 @@ spotless {
 
 tasks.named<Task>("check") {
     dependsOn(tasks.named<JacocoReport>("testCodeCoverageReport"))
+    dependsOn(tasks.named<TestReport>("testAggregateTestReport"))
 }
 
 defaultTasks("spotlessApply", "build")
