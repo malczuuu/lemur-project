@@ -35,6 +35,6 @@ public class KafkaContainerConfiguration {
   @Bean
   public ApplicationListener<ContextRefreshedEvent> kafkaAssignmentAwaiter(
       KafkaListenerEndpointRegistry registry) {
-    return _ -> KafkaTestUtils.awaitAssignment(registry);
+    return event -> KafkaTestUtils.awaitAssignment(registry);
   }
 }

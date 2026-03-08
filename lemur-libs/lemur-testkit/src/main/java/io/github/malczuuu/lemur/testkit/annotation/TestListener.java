@@ -5,7 +5,6 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 /**
  * Marks an {@code @Autowired TestKafkaConsumer} field with the Kafka topic it should consume from.
@@ -21,7 +20,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Qualifier
 public @interface TestListener {
 
   /**

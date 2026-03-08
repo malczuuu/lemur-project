@@ -26,24 +26,29 @@ class TestKafkaConsumerTests {
 
   @Autowired private KafkaOperations<String, String> kafkaOperations;
 
-  @TestListener(TestKafkaApplication.TOPIC)
-  private TestKafkaConsumer consumer;
+  @TestListener(TestKafkaApplication.TOPIC_IN)
+  private TestKafkaConsumer consumerIn;
+
+  @TestListener(TestKafkaApplication.TOPIC_OUT)
+  private TestKafkaConsumer consumerOut;
 
   @BeforeEach
   void beforeEach() {
-    consumer.clear();
+    consumerIn.clear();
+    consumerOut.clear();
   }
 
   @Test
   void givenPublishedMessage_whenPoll_thenReturnsRecord() {
-    kafkaOperations.send(TestKafkaApplication.TOPIC, "key-1", "value-1").join();
+    kafkaOperations.send(TestKafkaApplication.TOPIC_IN, "key-1", "value-1").join();
 
     await()
         .atMost(Duration.ofSeconds(15))
         .pollInterval(Duration.ofMillis(200))
         .untilAsserted(
             () -> {
-              List<ConsumerRecord<String, String>> records = consumer.poll(Duration.ofMillis(500));
+              List<ConsumerRecord<String, String>> records =
+                  consumerIn.poll(Duration.ofMillis(500));
               assertThat(records)
                   .anySatisfy(
                       r -> {
@@ -55,22 +60,22 @@ class TestKafkaConsumerTests {
 
   @Test
   void givenPublishedMessages_whenClear_thenSubsequentPollReturnsEmpty() {
-    kafkaOperations.send(TestKafkaApplication.TOPIC, "key-2", "value-2").join();
+    kafkaOperations.send(TestKafkaApplication.TOPIC_IN, "key-2", "value-2").join();
 
     await()
         .atMost(Duration.ofSeconds(15))
         .pollInterval(Duration.ofMillis(200))
-        .untilAsserted(() -> assertThat(consumer.poll(Duration.ofMillis(500))).isNotEmpty());
+        .untilAsserted(() -> assertThat(consumerIn.poll(Duration.ofMillis(500))).isNotEmpty());
 
-    consumer.clear();
+    consumerIn.clear();
 
-    assertThat(consumer.poll(Duration.ofMillis(300))).isEmpty();
+    assertThat(consumerIn.poll(Duration.ofMillis(300))).isEmpty();
   }
 
   @Test
   void givenPublishedMessageWithHeader_whenPoll_thenHeaderIsAccessible() {
     ProducerRecord<String, String> record =
-        new ProducerRecord<>(TestKafkaApplication.TOPIC, "key-3", "value-3");
+        new ProducerRecord<>(TestKafkaApplication.TOPIC_IN, "key-3", "value-3");
     record.headers().add("event_type", "TestEvent".getBytes(StandardCharsets.UTF_8));
     kafkaOperations.send(record).join();
 
@@ -79,7 +84,8 @@ class TestKafkaConsumerTests {
         .pollInterval(Duration.ofMillis(200))
         .untilAsserted(
             () -> {
-              List<ConsumerRecord<String, String>> records = consumer.poll(Duration.ofMillis(500));
+              List<ConsumerRecord<String, String>> records =
+                  consumerIn.poll(Duration.ofMillis(500));
               assertThat(records)
                   .anySatisfy(
                       r ->
@@ -89,6 +95,24 @@ class TestKafkaConsumerTests {
                                   h ->
                                       assertThat(new String(h.value(), StandardCharsets.UTF_8))
                                           .isEqualTo("TestEvent")));
+            });
+  }
+
+  @Test
+  void givenMessageOnTopicIn_whenForwarded_thenAppearsOnTopicOutOnly() {
+    consumerIn.clear();
+    consumerOut.clear();
+    kafkaOperations.send(TestKafkaApplication.TOPIC_IN, "key-x", "msg-x").join();
+
+    await()
+        .atMost(Duration.ofSeconds(15))
+        .pollInterval(Duration.ofMillis(200))
+        .untilAsserted(
+            () -> {
+              // Should appear on OUT, not on IN
+              assertThat(consumerIn.poll(Duration.ofMillis(500))).isEmpty();
+              assertThat(consumerOut.poll(Duration.ofMillis(500)))
+                  .anySatisfy(r -> assertThat(r.value()).isEqualTo("forwarded-msg-x"));
             });
   }
 
