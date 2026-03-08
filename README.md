@@ -27,37 +27,36 @@ A template Spring Boot project with a dummy reference implementation of a REST e
 
 ### Build & Test
 
-Default Gradle tasks are `spotlessApply` and `build`. To run both formatting and tests, simply execute:
+This project uses `idea-ext` plugin to generate IntelliJ IDEA run configurations for bulding project, launching apps and
+running tests.
 
-```bash
-./gradlew
-```
+Make sure a PostgreSQL instance and Kafka broker are available. See [`localhost`](./localhost) subdirectory for Docker
+Compose files to quickly spin up required services (it has its own [`README.md`](./localhost/README.md) with details).
 
-To run tests, execute:
+Service starts on port `:8321` by default if running from sources. In `Dockerfile`, ports are unified to port `:8080`.
 
-```bash
-./gradlew test
-```
+<details>
+<summary><b>For command-line instructions, expand...</b></summary>
 
-To run tests with Testcontainers, ensure Docker is running and add `-Pcontainers.enabled`:
+1. Default Gradle tasks are `spotlessApply` and `build`. To run both formatting and tests, simply execute:
+   ```bash
+   ./gradlew
+   ```
+2. To run tests, execute:
+   ```bash
+   ./gradlew test
+   ```
+3. To run tests with Testcontainers, ensure Docker is running and add `-Pcontainers.enabled`:
+   ```bash
+   ./gradlew test -Pcontainers.enabled
+   ```
+4. To run main application, execute:
+   ```bash
+   ./gradlew :lemur-app:bootRun
+   ```
+5. To run Flyway migrations, execute:
+   ```bash
+   ./gradlew :lemur-flyway:bootRun
+   ```
 
-```bash
-./gradlew test -Pcontainers.enabled
-```
-
-To run individual tests via IntelliJ IDEA, set `containers.enabled` in `gradle.properties` for convenience.
-
-### Run
-
-Importing to IntelliJ IDEA will automatically set up run configuration, thanks to `idea-ext` plugin.
-
-If running from command line, execute:
-
-```bash
-./gradlew :lemur-app:bootRun
-```
-
-Make sure a PostgreSQL instance and Kafka broker are available, or configure them via `application.yml`.
-
-Service starts on port `8321` by default if running from sources. In `Dockerfile`, port is normalized to a semi-standard
-port `8080`.
+</details>
