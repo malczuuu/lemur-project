@@ -7,14 +7,20 @@ import org.springframework.kafka.config.KafkaListenerEndpointRegistry;
 import org.springframework.kafka.listener.MessageListenerContainer;
 
 /**
- * Utility to wait until all Kafka listener containers have completed partition assignment. Call
- * this in {@code @BeforeAll} to prevent tests from running before the application's Kafka consumer
- * has rebalanced and is ready to receive messages.
+ * Utility to wait until all Kafka listener containers have completed partition assignment.
+ *
+ * <p>Call this in {@code @BeforeAll} to prevent tests from running before the application's Kafka
+ * consumer has rebalanced and is ready to receive messages.
  */
 public final class KafkaTestUtils {
 
   private KafkaTestUtils() {}
 
+  /**
+   * Waits until all Kafka listener containers in the registry have completed partition assignment.
+   *
+   * @param registry the KafkaListenerEndpointRegistry to check
+   */
   public static void awaitAssignment(KafkaListenerEndpointRegistry registry) {
     await()
         .atMost(Duration.ofSeconds(30))

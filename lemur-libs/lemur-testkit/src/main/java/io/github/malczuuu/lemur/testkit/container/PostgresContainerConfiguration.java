@@ -6,12 +6,17 @@ import org.springframework.context.annotation.Bean;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 import org.testcontainers.utility.DockerImageName;
 
+/**
+ * Spring {@link TestConfiguration} for managing a PostgreSQL Testcontainer for integration testing.
+ *
+ * <p>Provides a bean for the PostgreSQL container lifecycle.
+ */
 @TestConfiguration(proxyBeanMethods = false)
 public class PostgresContainerConfiguration {
 
   @Bean
   @ServiceConnection
-  public PostgreSQLContainer postgresContainer() {
+  PostgreSQLContainer postgresContainer() {
     return new PostgreSQLContainer(DockerImageName.parse("postgres:18.3-alpine"));
   }
 }
