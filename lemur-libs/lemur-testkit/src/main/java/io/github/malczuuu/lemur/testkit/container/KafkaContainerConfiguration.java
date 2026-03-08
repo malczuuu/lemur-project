@@ -13,12 +13,18 @@ import org.springframework.kafka.core.KafkaAdmin;
 import org.testcontainers.kafka.KafkaContainer;
 import org.testcontainers.utility.DockerImageName;
 
+/**
+ * Spring {@link TestConfiguration} for managing a Kafka Testcontainer and related test topics for
+ * integration testing.
+ *
+ * <p>Provides beans for the Kafka container, topic creation, and assignment awaiting.
+ */
 @TestConfiguration(proxyBeanMethods = false)
 public class KafkaContainerConfiguration {
 
   @Bean
   @ServiceConnection
-  public KafkaContainer kafkaContainer() {
+  KafkaContainer kafkaContainer() {
     return new KafkaContainer(DockerImageName.parse("apache/kafka:4.2.0"))
         .withEnv("KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR", "1")
         .withEnv("KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR", "1")
@@ -26,14 +32,14 @@ public class KafkaContainerConfiguration {
   }
 
   @Bean
-  public KafkaAdmin.NewTopics lemurAppTopics(
+  KafkaAdmin.NewTopics lemurAppTopics(
       @Value("${lemur-app.kafka.topic.player-events}") String playerEventsTopic) {
     return new KafkaAdmin.NewTopics(
         TopicBuilder.name(playerEventsTopic).partitions(5).replicas(1).build());
   }
 
   @Bean
-  public ApplicationListener<ContextRefreshedEvent> kafkaAssignmentAwaiter(
+  ApplicationListener<ContextRefreshedEvent> kafkaAssignmentAwaiter(
       KafkaListenerEndpointRegistry registry) {
     return event -> KafkaTestUtils.awaitAssignment(registry);
   }
