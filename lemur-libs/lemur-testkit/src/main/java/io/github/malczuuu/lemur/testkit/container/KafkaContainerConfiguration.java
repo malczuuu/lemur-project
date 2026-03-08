@@ -1,9 +1,13 @@
 package io.github.malczuuu.lemur.testkit.container;
 
+import io.github.malczuuu.lemur.testkit.kafka.KafkaTestUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.kafka.config.KafkaListenerEndpointRegistry;
 import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.kafka.core.KafkaAdmin;
 import org.testcontainers.kafka.KafkaContainer;
@@ -26,5 +30,11 @@ public class KafkaContainerConfiguration {
       @Value("${lemur-app.kafka.topic.player-events}") String playerEventsTopic) {
     return new KafkaAdmin.NewTopics(
         TopicBuilder.name(playerEventsTopic).partitions(5).replicas(1).build());
+  }
+
+  @Bean
+  public ApplicationListener<ContextRefreshedEvent> kafkaAssignmentAwaiter(
+      KafkaListenerEndpointRegistry registry) {
+    return _ -> KafkaTestUtils.awaitAssignment(registry);
   }
 }

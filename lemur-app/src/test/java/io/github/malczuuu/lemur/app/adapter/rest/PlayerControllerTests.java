@@ -1,5 +1,7 @@
 package io.github.malczuuu.lemur.app.adapter.rest;
 
+import static io.github.malczuuu.lemur.app.common.message.MessageHeader.EVENT_TYPE_HEADER;
+import static io.github.malczuuu.lemur.app.common.message.MessageHeader.findHeader;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -15,12 +17,15 @@ import io.github.malczuuu.lemur.app.infra.data.jpa.PlayerEntity;
 import io.github.malczuuu.lemur.app.infra.data.jpa.PlayerJpaRepository;
 import io.github.malczuuu.lemur.testkit.annotation.KafkaAwareTest;
 import io.github.malczuuu.lemur.testkit.annotation.PostgresAwareTest;
+import io.github.malczuuu.lemur.testkit.annotation.TestListener;
+import io.github.malczuuu.lemur.testkit.kafka.TestKafkaConsumer;
 import io.github.problem4j.core.Problem;
 import java.net.URI;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -49,6 +54,9 @@ class PlayerControllerTests {
   @Autowired private PlayerJpaRepository playerRepository;
   @Autowired private JsonMapper jsonMapper;
 
+  @TestListener("${lemur-app.kafka.topic.player-events}")
+  private TestKafkaConsumer kafkaConsumer;
+
   private PlayerEntity player;
 
   @BeforeAll
@@ -58,6 +66,7 @@ class PlayerControllerTests {
 
   @BeforeEach
   void beforeEach() {
+    kafkaConsumer.clear();
     player = new PlayerEntity();
     player.setName("john.doe");
     player.setStatus(PlayerStatus.ACTIVE.getLabel());
@@ -247,5 +256,78 @@ class PlayerControllerTests {
     Problem problem = jsonMapper.readValue(response.getResponseBodyContent(), Problem.class);
     assertThat(problem.getType()).isEqualTo(URI.create("PLAYER_NOT_BANNED"));
     assertThat(problem.getStatus()).isEqualTo(HttpStatus.CONFLICT.value());
+  }
+
+  @Test
+  void givenValidBody_whenRegisterPlayer_thenPublishesPlayerRegisteredEvent() {
+    ExchangeResult response =
+        restClient
+            .post()
+            .uri("/api/v1/players")
+            .contentType(APPLICATION_JSON)
+            .body(new RegisterPlayerModel("kafka.user"))
+            .exchange()
+            .returnResult();
+
+    assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED);
+    Identity body = jsonMapper.readValue(response.getResponseBodyContent(), Identity.class);
+
+    await()
+        .atMost(Duration.ofSeconds(15))
+        .pollInterval(Duration.ofMillis(300))
+        .untilAsserted(
+            () -> {
+              List<ConsumerRecord<String, String>> records =
+                  kafkaConsumer.poll(Duration.ofMillis(500));
+              assertThat(records)
+                  .anySatisfy(
+                      r -> {
+                        assertThat(findHeader(r, EVENT_TYPE_HEADER)).hasValue("PlayerRegistered");
+                        assertThat(r.key()).isEqualTo(body.id());
+                      });
+            });
+  }
+
+  @Test
+  void givenExistingPlayer_whenBanPlayer_thenPublishesPlayerBannedEvent() {
+    restClient.post().uri("/api/v1/players/{id}/ban", player.getId()).exchange().returnResult();
+
+    await()
+        .atMost(Duration.ofSeconds(15))
+        .pollInterval(Duration.ofMillis(300))
+        .untilAsserted(
+            () -> {
+              List<ConsumerRecord<String, String>> records =
+                  kafkaConsumer.poll(Duration.ofMillis(500));
+              assertThat(records)
+                  .anySatisfy(
+                      r -> {
+                        assertThat(findHeader(r, EVENT_TYPE_HEADER)).hasValue("PlayerBanned");
+                        assertThat(r.key()).isEqualTo(String.valueOf(player.getId()));
+                      });
+            });
+  }
+
+  @Test
+  void givenBannedPlayer_whenUnbanPlayer_thenPublishesPlayerUnbannedEvent() {
+    player.setStatus(PlayerStatus.BANNED.getLabel());
+    player = playerRepository.save(player);
+
+    restClient.delete().uri("/api/v1/players/{id}/ban", player.getId()).exchange().returnResult();
+
+    await()
+        .atMost(Duration.ofSeconds(15))
+        .pollInterval(Duration.ofMillis(300))
+        .untilAsserted(
+            () -> {
+              List<ConsumerRecord<String, String>> records =
+                  kafkaConsumer.poll(Duration.ofMillis(500));
+              assertThat(records)
+                  .anySatisfy(
+                      r -> {
+                        assertThat(findHeader(r, EVENT_TYPE_HEADER)).hasValue("PlayerUnbanned");
+                        assertThat(r.key()).isEqualTo(String.valueOf(player.getId()));
+                      });
+            });
   }
 }
