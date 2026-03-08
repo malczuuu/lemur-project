@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.json.JsonMapper;
@@ -34,6 +35,7 @@ public class PlayerEventListener {
   }
 
   @KafkaListener(topics = {"${lemur-app.kafka.topic.player-events}"})
+  @Transactional
   public void onPlayerEvent(ConsumerRecord<String, String> record) {
     try {
       String eventType = MessageHeader.findHeader(record, EVENT_TYPE_HEADER).orElse("unknown");

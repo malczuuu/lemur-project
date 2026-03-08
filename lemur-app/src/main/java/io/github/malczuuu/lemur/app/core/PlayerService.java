@@ -11,6 +11,7 @@ import io.github.malczuuu.lemur.app.domain.player.PlayerRepository;
 import io.github.malczuuu.lemur.app.domain.player.PlayerUnbanned;
 import io.github.malczuuu.lemur.app.domain.player.PlayerUpdated;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,6 +45,17 @@ public class PlayerService {
     Player player = new Player(model.name());
     player = playerRepository.save(player);
     playerEventGateway.publish(new PlayerCreated(player.getId().getValue()));
+
+    try {
+      Thread.sleep(ThreadLocalRandom.current().nextInt(800, 1200));
+    } catch (InterruptedException e) {
+      throw new RuntimeException(e);
+    }
+
+    if (player.getName().equalsIgnoreCase("FailForMe")) {
+      throw new RuntimeException("simulated failure for testing");
+    }
+
     return new Identity(player.getId().getValue());
   }
 
