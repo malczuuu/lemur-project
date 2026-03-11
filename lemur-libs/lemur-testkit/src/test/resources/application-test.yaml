@@ -1,0 +1,12 @@
+spring:
+  main:
+    banner-mode: off
+
+lemur-app:
+  kafka:
+    topic:
+      player-events: lemur-app-player-events
+
+logging:
+  level:
+    io.github.malczuuu.lemur: DEBUG

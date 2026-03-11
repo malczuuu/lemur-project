@@ -1,0 +1,5 @@
+org.springframework.test.context.ContextCustomizerFactory=\
+  io.github.malczuuu.lemur.testkit.kafka.TestKafkaConsumerContextCustomizerFactory
+
+org.springframework.test.context.TestExecutionListener=\
+  io.github.malczuuu.lemur.testkit.kafka.TestKafkaConsumerInjector
