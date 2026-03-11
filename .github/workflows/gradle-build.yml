@@ -4,8 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - "main"
-      - "sandbox-*"
+      - "*"
     paths:
       - ".github/workflows/gradle-build.yml"
       - "buildSrc/**"
@@ -17,8 +16,7 @@ on:
       - "gradlew.bat"
   pull_request:
     branches:
-      - "main"
-      - "sandbox-*"
+      - "*"
 
 jobs:
   build:
