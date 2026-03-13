@@ -1,6 +1,6 @@
 package io.github.malczuuu.lemur.app.infra.data.jpa.player;
 
-import io.github.malczuuu.lemur.app.common.IdAsLong;
+import io.github.malczuuu.lemur.app.common.ParsedLong;
 import io.github.malczuuu.lemur.app.domain.DomainId;
 import io.github.malczuuu.lemur.app.domain.player.Player;
 import io.github.malczuuu.lemur.app.domain.player.PlayerBuilder;
@@ -12,7 +12,7 @@ class PlayerEntityMapper {
     PlayerEntity entity = new PlayerEntity();
 
     if (!player.isNew()) {
-      IdAsLong id = IdAsLong.parse(player.getId().getValue());
+      ParsedLong id = ParsedLong.parse(player.getId().getValue());
       entity.setId(id.get());
     }
 

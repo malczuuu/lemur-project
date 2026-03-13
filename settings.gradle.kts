@@ -14,6 +14,7 @@ rootProject.name = "lemur-project"
 include(":lemur-app")
 include(":lemur-flyway")
 include(":lemur-libs:lemur-bom")
+include(":lemur-libs:lemur-contract")
 include(":lemur-libs:lemur-log4j2")
 include(":lemur-libs:lemur-migration")
 include(":lemur-libs:lemur-testkit")

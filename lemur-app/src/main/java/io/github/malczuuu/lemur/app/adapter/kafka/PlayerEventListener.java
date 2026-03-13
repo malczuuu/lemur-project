@@ -1,11 +1,11 @@
 package io.github.malczuuu.lemur.app.adapter.kafka;
 
-import static io.github.malczuuu.lemur.app.common.message.MessageHeader.EVENT_TYPE_HEADER;
+import static io.github.malczuuu.lemur.contract.message.MessageHeader.EVENT_TYPE_HEADER;
 
-import io.github.malczuuu.lemur.app.common.IdAsLong;
-import io.github.malczuuu.lemur.app.common.message.MessageHeader;
+import io.github.malczuuu.lemur.app.common.ParsedLong;
 import io.github.malczuuu.lemur.app.infra.data.jpa.player.PlayerEventLogEntity;
 import io.github.malczuuu.lemur.app.infra.data.jpa.player.PlayerEventLogJpaRepository;
+import io.github.malczuuu.lemur.contract.message.MessageHeader;
 import java.time.Clock;
 import java.time.Instant;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -40,14 +40,14 @@ public class PlayerEventListener {
       JsonNode node = jsonMapper.readTree(record.value());
       String playerId = node.path("playerId").asString();
 
-      IdAsLong idAsLong = IdAsLong.parse(playerId);
-      if (!idAsLong.isValid()) {
+      ParsedLong parsedLong = ParsedLong.parse(playerId);
+      if (!parsedLong.isValid()) {
         logInvalidId(record, eventType, playerId);
         return;
       }
 
       PlayerEventLogEntity eventLogEntity = new PlayerEventLogEntity();
-      eventLogEntity.setPlayerId(idAsLong.get());
+      eventLogEntity.setPlayerId(parsedLong.get());
       eventLogEntity.setEventType(eventType);
       eventLogEntity.setPayload(record.value());
       eventLogEntity.setPublishedDate(Instant.ofEpochMilli(record.timestamp()));

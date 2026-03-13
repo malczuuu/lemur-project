@@ -6,8 +6,8 @@ archunit = "1.4.1"
 errorprone = "2.48.0"
 errorprone-plugin = "5.1.0"
 idea-ext = "1.4.1"
+jackson = "3.1.0"
 jackson2 = "2.21.1"
-jackson3 = "3.1.0"
 jspecify = "1.0.0"
 junit = "6.0.3"
 kafka-clients = "4.2.0"
@@ -28,12 +28,18 @@ spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
 #
 #  boms
 #
+jackson-bom = { module = "tools.jackson:jackson-bom", version.ref = "jackson" }
 jackson2-bom = { module = "com.fasterxml.jackson:jackson-bom", version.ref = "jackson2" }
-jackson3-bom = { module = "tools.jackson:jackson-bom", version.ref = "jackson3" }
 junit-bom = { module = "org.junit:junit-bom", version.ref = "junit" }
 problem4j-spring-bom = { module = "io.github.problem4j:problem4j-spring-bom", version.ref = "problem4j-spring" }
 spring-boot-dependencies = { module = "org.springframework.boot:spring-boot-dependencies", version.ref = "spring-boot" }
 springdoc-openapi-bom = { module = "org.springdoc:springdoc-openapi-bom", version.ref = "springdoc-openapi" }
+#
+#
+#  modules managed by jackson3-bom
+#
+jackson-module-kotlin = { module = "tools.jackson.module:jackson-module-kotlin" }
+jackson-annotations = { module = "com.fasterxml.jackson.core:jackson-annotations" }
 #
 #
 #  versions managed by junit-bom
@@ -93,6 +99,7 @@ springdoc-openapi-starter-webmvc-ui = { module = "org.springdoc:springdoc-openap
 #
 archunit = { module = "com.tngtech.archunit:archunit-junit5", version.ref = "archunit" }
 errorprone-core = { module = "com.google.errorprone:error_prone_core", version.ref = "errorprone" }
+jakarta-validation-api = { module = "jakarta.validation:jakarta.validation-api" }
 jspecify = { module = "org.jspecify:jspecify", version.ref = "jspecify" }
 kafka-clients = { module = "org.apache.kafka:kafka-clients", version.ref = "kafka-clients" }
 lombok = { module = "org.projectlombok:lombok", version.ref = "lombok" }

@@ -1,21 +1,21 @@
 package io.github.malczuuu.lemur.app.adapter.rest;
 
-import static io.github.malczuuu.lemur.app.common.message.MessageHeader.EVENT_TYPE_HEADER;
-import static io.github.malczuuu.lemur.app.common.message.MessageHeader.findHeader;
+import static io.github.malczuuu.lemur.contract.message.MessageHeader.EVENT_TYPE_HEADER;
+import static io.github.malczuuu.lemur.contract.message.MessageHeader.findHeader;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON;
 
 import io.github.malczuuu.lemur.app.LemurApplication;
-import io.github.malczuuu.lemur.app.common.model.Content;
-import io.github.malczuuu.lemur.app.common.model.Identity;
-import io.github.malczuuu.lemur.app.contract.rest.player.CreatePlayerDto;
-import io.github.malczuuu.lemur.app.contract.rest.player.PlayerDto;
-import io.github.malczuuu.lemur.app.contract.rest.player.UpdatePlayerDto;
+import io.github.malczuuu.lemur.app.common.Content;
+import io.github.malczuuu.lemur.app.common.Identity;
 import io.github.malczuuu.lemur.app.domain.player.PlayerStatus;
 import io.github.malczuuu.lemur.app.infra.data.jpa.player.PlayerEntity;
 import io.github.malczuuu.lemur.app.infra.data.jpa.player.PlayerJpaRepository;
+import io.github.malczuuu.lemur.contract.rest.player.CreatePlayerDto;
+import io.github.malczuuu.lemur.contract.rest.player.PlayerDto;
+import io.github.malczuuu.lemur.contract.rest.player.UpdatePlayerDto;
 import io.github.malczuuu.lemur.testkit.annotation.ContainerTest;
 import io.github.malczuuu.lemur.testkit.annotation.TestListener;
 import io.github.malczuuu.lemur.testkit.container.KafkaAwareTest;

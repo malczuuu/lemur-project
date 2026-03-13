@@ -5,14 +5,14 @@ import static org.awaitility.Awaitility.await;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 import io.github.malczuuu.lemur.app.LemurApplication;
-import io.github.malczuuu.lemur.app.common.model.Identity;
-import io.github.malczuuu.lemur.app.contract.rest.player.UpdatePlayerDto;
-import io.github.malczuuu.lemur.app.core.CreatePlayerModel;
+import io.github.malczuuu.lemur.app.common.Identity;
+import io.github.malczuuu.lemur.app.core.player.PlayerCommand;
 import io.github.malczuuu.lemur.app.domain.player.PlayerStatus;
 import io.github.malczuuu.lemur.app.infra.data.jpa.player.PlayerEntity;
 import io.github.malczuuu.lemur.app.infra.data.jpa.player.PlayerEventLogEntity;
 import io.github.malczuuu.lemur.app.infra.data.jpa.player.PlayerEventLogJpaRepository;
 import io.github.malczuuu.lemur.app.infra.data.jpa.player.PlayerJpaRepository;
+import io.github.malczuuu.lemur.contract.rest.player.UpdatePlayerDto;
 import io.github.malczuuu.lemur.testkit.annotation.ContainerTest;
 import io.github.malczuuu.lemur.testkit.annotation.TestListener;
 import io.github.malczuuu.lemur.testkit.container.KafkaAwareTest;
@@ -65,7 +65,7 @@ class PlayerListenerTests implements KafkaAwareTest, PostgresAwareTest {
             .post()
             .uri("/api/v1/players")
             .contentType(APPLICATION_JSON)
-            .body(new CreatePlayerModel("alice"))
+            .body(new PlayerCommand.CreatePlayer("alice"))
             .exchange()
             .returnResult();
     assertThat(result.getStatus()).isEqualTo(HttpStatus.CREATED);

@@ -1,15 +1,18 @@
 package io.github.malczuuu.lemur.app.adapter.rest;
 
-import io.github.malczuuu.lemur.app.contract.rest.player.CreatePlayerDto;
-import io.github.malczuuu.lemur.app.contract.rest.player.PlayerDto;
-import io.github.malczuuu.lemur.app.contract.rest.player.UpdatePlayerDto;
-import io.github.malczuuu.lemur.app.core.CreatePlayerModel;
-import io.github.malczuuu.lemur.app.core.PlayerModel;
-import io.github.malczuuu.lemur.app.core.UpdatePlayerModel;
+import io.github.malczuuu.lemur.app.core.player.PlayerDetails;
+import io.github.malczuuu.lemur.app.core.player.PlayerItem;
+import io.github.malczuuu.lemur.contract.rest.player.PlayerDto;
+import io.github.malczuuu.lemur.contract.rest.player.PlayerItemDto;
 
 final class PlayerDtoMapper {
 
-  PlayerDto toPlayerDto(PlayerModel model) {
+  PlayerItemDto toPlayerItemDto(PlayerItem player) {
+    return new PlayerItemDto(
+        player.id(), player.name(), player.rating(), player.status().getLabel());
+  }
+
+  PlayerDto toPlayerDto(PlayerDetails model) {
     return new PlayerDto(
         model.id(),
         model.name(),
@@ -18,13 +21,5 @@ final class PlayerDtoMapper {
         model.createdDate(),
         model.lastModifiedDate(),
         model.version());
-  }
-
-  CreatePlayerModel toCreatePlayerModel(CreatePlayerDto dto) {
-    return new CreatePlayerModel(dto.name());
-  }
-
-  public UpdatePlayerModel toUpdatePlayerModel(UpdatePlayerDto dto) {
-    return new UpdatePlayerModel(dto.name(), dto.version());
   }
 }

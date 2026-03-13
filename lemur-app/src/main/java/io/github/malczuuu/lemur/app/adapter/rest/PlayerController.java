@@ -1,14 +1,15 @@
 package io.github.malczuuu.lemur.app.adapter.rest;
 
-import io.github.malczuuu.lemur.app.common.model.Content;
-import io.github.malczuuu.lemur.app.common.model.Identity;
-import io.github.malczuuu.lemur.app.contract.rest.player.CreatePlayerDto;
-import io.github.malczuuu.lemur.app.contract.rest.player.PlayerDto;
-import io.github.malczuuu.lemur.app.contract.rest.player.UpdatePlayerDto;
-import io.github.malczuuu.lemur.app.core.CreatePlayerModel;
-import io.github.malczuuu.lemur.app.core.PlayerModel;
-import io.github.malczuuu.lemur.app.core.PlayerService;
-import io.github.malczuuu.lemur.app.core.UpdatePlayerModel;
+import io.github.malczuuu.lemur.app.common.Content;
+import io.github.malczuuu.lemur.app.common.Identity;
+import io.github.malczuuu.lemur.app.core.player.PlayerCommand;
+import io.github.malczuuu.lemur.app.core.player.PlayerDetails;
+import io.github.malczuuu.lemur.app.core.player.PlayerItem;
+import io.github.malczuuu.lemur.app.core.player.PlayerService;
+import io.github.malczuuu.lemur.contract.rest.player.CreatePlayerDto;
+import io.github.malczuuu.lemur.contract.rest.player.PlayerDto;
+import io.github.malczuuu.lemur.contract.rest.player.PlayerItemDto;
+import io.github.malczuuu.lemur.contract.rest.player.UpdatePlayerDto;
 import jakarta.validation.Valid;
 import java.net.URI;
 import org.springframework.http.MediaType;
@@ -35,24 +36,23 @@ public class PlayerController {
   }
 
   @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-  public Content<PlayerDto> getPlayers() {
-    Content<PlayerModel> players = playerService.getPlayers();
-    return players.map(mapper::toPlayerDto);
+  public ResponseEntity<Content<PlayerItemDto>> getPlayers() {
+    Content<PlayerItem> items = playerService.getPlayers();
+    return ResponseEntity.ok(items.map(mapper::toPlayerItemDto));
   }
 
   @GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<PlayerDto> getPlayer(@PathVariable String id) {
-    PlayerModel player = playerService.getPlayer(id);
-    PlayerDto responseBody = mapper.toPlayerDto(player);
-    return ResponseEntity.ok(responseBody);
+    PlayerDetails player = playerService.getPlayer(id);
+    return ResponseEntity.ok(mapper.toPlayerDto(player));
   }
 
   @PostMapping(
       consumes = MediaType.APPLICATION_JSON_VALUE,
       produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Identity> createPlayer(@RequestBody @Valid CreatePlayerDto requestBody) {
-    CreatePlayerModel model = mapper.toCreatePlayerModel(requestBody);
-    Identity responseBody = playerService.createPlayer(model);
+    PlayerCommand.CreatePlayer command = new PlayerCommand.CreatePlayer(requestBody.name());
+    Identity responseBody = playerService.createPlayer(command);
     return ResponseEntity.created(URI.create("/api/v1/players/" + responseBody.id()))
         .body(responseBody);
   }
@@ -63,20 +63,23 @@ public class PlayerController {
       produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Void> updatePlayer(
       @PathVariable String id, @RequestBody @Valid UpdatePlayerDto requestBody) {
-    UpdatePlayerModel model = mapper.toUpdatePlayerModel(requestBody);
-    playerService.updatePlayer(id, model);
+    PlayerCommand.UpdatePlayer command =
+        new PlayerCommand.UpdatePlayer(id, requestBody.name(), requestBody.version());
+    playerService.updatePlayer(command);
     return ResponseEntity.noContent().build();
   }
 
   @PostMapping(path = "/{id}/ban")
   public ResponseEntity<Void> banPlayer(@PathVariable String id) {
-    playerService.banPlayer(id);
+    PlayerCommand.BanPlayer command = new PlayerCommand.BanPlayer(id);
+    playerService.banPlayer(command);
     return ResponseEntity.noContent().build();
   }
 
   @DeleteMapping(path = "/{id}/ban")
   public ResponseEntity<Void> unbanPlayer(@PathVariable String id) {
-    playerService.unbanPlayer(id);
+    PlayerCommand.UnbanPlayer command = new PlayerCommand.UnbanPlayer(id);
+    playerService.unbanPlayer(command);
     return ResponseEntity.noContent().build();
   }
 }

@@ -12,6 +12,7 @@ dependencies {
 
     implementation(platform(project(":lemur-libs:lemur-bom")))
 
+    implementation(project(":lemur-libs:lemur-contract"))
     implementation(project(":lemur-libs:lemur-log4j2"))
 
     implementation(libs.problem4j.spring.webmvc)

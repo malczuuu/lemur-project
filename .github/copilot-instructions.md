@@ -9,10 +9,11 @@
 
 - `lemur-app` - REST API, domain, Kafka, JPA (main app)
 - `lemur-flyway` - Standalone Flyway migration runner
-- `lemur-libs:lemur-bom` - Central BOM (all versions here)
+- `lemur-libs:lemur-bom` - Central BOM (dependency management)
+- `lemur-libs:lemur-contract` - Shared API and messaging contract types
 - `lemur-libs:lemur-log4j2` - Shared log4j2 configuration
 - `lemur-libs:lemur-migration` - Shared Flyway SQL scripts
-- `lemur-libs:lemur-testkit` - Shared test infra (`@PostgresAwareTest`, `@KafkaAwareTest`) - Testcontainers and friends
+- `lemur-libs:lemur-testkit` - Shared test infra and utilities
 - `buildSrc` - Internal Gradle convention plugins
 
 ## Key Commands

@@ -1,19 +1,15 @@
 package io.github.malczuuu.lemur.app.infra.kafka;
 
-import static io.github.malczuuu.lemur.app.common.message.MessageHeader.EVENT_TYPE_HEADER;
+import static io.github.malczuuu.lemur.contract.message.MessageHeader.EVENT_TYPE_HEADER;
 
-import io.github.malczuuu.lemur.app.contract.event.TransportMessage;
-import io.github.malczuuu.lemur.app.contract.event.player.PlayerBannedEvent;
-import io.github.malczuuu.lemur.app.contract.event.player.PlayerCreatedEvent;
-import io.github.malczuuu.lemur.app.contract.event.player.PlayerRatingChangedEvent;
-import io.github.malczuuu.lemur.app.contract.event.player.PlayerUnbannedEvent;
-import io.github.malczuuu.lemur.app.contract.event.player.PlayerUpdatedEvent;
-import io.github.malczuuu.lemur.app.domain.player.PlayerBanned;
-import io.github.malczuuu.lemur.app.domain.player.PlayerCreated;
+import io.github.malczuuu.lemur.app.domain.player.PlayerEvent;
 import io.github.malczuuu.lemur.app.domain.player.PlayerEventGateway;
-import io.github.malczuuu.lemur.app.domain.player.PlayerRatingChanged;
-import io.github.malczuuu.lemur.app.domain.player.PlayerUnbanned;
-import io.github.malczuuu.lemur.app.domain.player.PlayerUpdated;
+import io.github.malczuuu.lemur.contract.TransportMessage;
+import io.github.malczuuu.lemur.contract.message.player.PlayerBannedMessage;
+import io.github.malczuuu.lemur.contract.message.player.PlayerCreatedMessage;
+import io.github.malczuuu.lemur.contract.message.player.PlayerRatingChangedMessage;
+import io.github.malczuuu.lemur.contract.message.player.PlayerUnbannedMessage;
+import io.github.malczuuu.lemur.contract.message.player.PlayerUpdatedMessage;
 import io.micrometer.core.instrument.MeterRegistry;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -53,10 +49,10 @@ class KafkaPlayerEventGateway implements PlayerEventGateway {
   }
 
   @Override
-  public void publish(PlayerCreated event) {
+  public void publish(PlayerEvent.PlayerCreated event) {
     String eventType = "PlayerCreated";
     try {
-      PlayerCreatedEvent message = new PlayerCreatedEvent(event.playerId());
+      PlayerCreatedMessage message = new PlayerCreatedMessage(event.playerId());
       send(event.playerId(), eventType, message);
       incrementSuccessMetric(eventType);
     } catch (Exception e) {
@@ -67,10 +63,10 @@ class KafkaPlayerEventGateway implements PlayerEventGateway {
   }
 
   @Override
-  public void publish(PlayerUpdated event) {
+  public void publish(PlayerEvent.PlayerUpdated event) {
     String eventType = "PlayerUpdated";
     try {
-      PlayerUpdatedEvent message = new PlayerUpdatedEvent(event.playerId());
+      PlayerUpdatedMessage message = new PlayerUpdatedMessage(event.playerId());
       send(event.playerId(), eventType, message);
       incrementSuccessMetric(eventType);
     } catch (Exception e) {
@@ -81,10 +77,10 @@ class KafkaPlayerEventGateway implements PlayerEventGateway {
   }
 
   @Override
-  public void publish(PlayerBanned event) {
+  public void publish(PlayerEvent.PlayerBanned event) {
     String eventType = "PlayerBanned";
     try {
-      PlayerBannedEvent message = new PlayerBannedEvent(event.playerId());
+      PlayerBannedMessage message = new PlayerBannedMessage(event.playerId());
       send(event.playerId(), eventType, message);
       incrementSuccessMetric(eventType);
     } catch (Exception e) {
@@ -95,10 +91,10 @@ class KafkaPlayerEventGateway implements PlayerEventGateway {
   }
 
   @Override
-  public void publish(PlayerUnbanned event) {
+  public void publish(PlayerEvent.PlayerUnbanned event) {
     String eventType = "PlayerUnbanned";
     try {
-      PlayerUnbannedEvent message = new PlayerUnbannedEvent(event.playerId());
+      PlayerUnbannedMessage message = new PlayerUnbannedMessage(event.playerId());
       send(event.playerId(), eventType, message);
       incrementSuccessMetric(eventType);
     } catch (Exception e) {
@@ -109,11 +105,11 @@ class KafkaPlayerEventGateway implements PlayerEventGateway {
   }
 
   @Override
-  public void publish(PlayerRatingChanged event) {
+  public void publish(PlayerEvent.PlayerRatingChanged event) {
     String eventType = "PlayerRatingChanged";
     try {
-      PlayerRatingChangedEvent message =
-          new PlayerRatingChangedEvent(event.playerId(), event.oldRating(), event.newRating());
+      PlayerRatingChangedMessage message =
+          new PlayerRatingChangedMessage(event.playerId(), event.oldRating(), event.newRating());
       send(event.playerId(), eventType, message);
       incrementSuccessMetric(eventType);
     } catch (Exception e) {

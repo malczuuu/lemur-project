@@ -3,8 +3,8 @@ plugins {
 }
 
 dependencies {
+    api(platform(libs.jackson.bom))
     api(platform(libs.jackson2.bom))
-    api(platform(libs.jackson3.bom))
     api(platform(libs.junit.bom))
     api(platform(libs.problem4j.spring.bom))
     api(platform(libs.spring.boot.dependencies))
