@@ -4,7 +4,10 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - "*"
+      - "java"
+      - "java-*"
+      - "kotlin"
+      - "kotlin-*"
     paths:
       - ".github/workflows/gradle-build.yml"
       - "buildSrc/**"
@@ -16,7 +19,10 @@ on:
       - "gradlew.bat"
   pull_request:
     branches:
-      - "*"
+      - "java"
+      - "java-*"
+      - "kotlin"
+      - "kotlin-*"
 
 jobs:
   build:

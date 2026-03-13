@@ -4,9 +4,7 @@ on:
     branches:
       - main
     paths:
-      - uiot-*/build.gradle.kts
-      - build.gradle.kts
-      - settings.gradle.kts
+      - '**/*.gradle.kts'
       - gradle.properties
       - gradle/**
       - buildSrc/**

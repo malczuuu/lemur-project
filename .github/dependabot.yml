@@ -1,10 +1,15 @@
 version: 2
 updates:
+
+  #
+  # Configuration for "java" branch.
+  #
+
   - package-ecosystem: "gradle"
     directory: "/"
     schedule:
       interval: "monthly"
-    target-branch: main
+    target-branch: java
     open-pull-requests-limit: 10
     allow:
       - dependency-type: "direct"
@@ -21,7 +26,39 @@ updates:
     directory: "/"
     schedule:
       interval: "monthly"
-    target-branch: main
+    target-branch: java
+    open-pull-requests-limit: 10
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+
+  #
+  # Configurations for "kotlin" branch.
+  #
+
+  - package-ecosystem: "gradle"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    target-branch: kotlin
+    open-pull-requests-limit: 10
+    allow:
+      - dependency-type: "direct"
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
+    groups:
+      gradle:
+        patterns:
+          - "*"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    target-branch: kotlin
     open-pull-requests-limit: 10
     groups:
       github-actions:
