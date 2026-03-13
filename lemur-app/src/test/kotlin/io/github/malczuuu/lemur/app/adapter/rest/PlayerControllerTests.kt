@@ -10,6 +10,7 @@ import io.github.malczuuu.lemur.contract.rest.ContentResult
 import io.github.malczuuu.lemur.contract.rest.IdentityResult
 import io.github.malczuuu.lemur.contract.rest.player.CreatePlayerDto
 import io.github.malczuuu.lemur.contract.rest.player.PlayerDto
+import io.github.malczuuu.lemur.contract.rest.player.PlayerItemDto
 import io.github.malczuuu.lemur.contract.rest.player.UpdatePlayerDto
 import io.github.malczuuu.lemur.testkit.annotation.ContainerTest
 import io.github.malczuuu.lemur.testkit.annotation.TestListener
@@ -88,11 +89,11 @@ class PlayerControllerTests :
         assertThat(response.status).isEqualTo(HttpStatus.OK)
         assertThat(response.responseHeaders.contentType).isEqualTo(MediaType.APPLICATION_JSON)
 
-        val body: ContentResult<PlayerDto> =
-            jsonMapper.readValue<ContentResult<PlayerDto>>(response.responseBodyContent)
+        val body: ContentResult<PlayerItemDto> =
+            jsonMapper.readValue<ContentResult<PlayerItemDto>>(response.responseBodyContent)
         assertThat(body.content).hasSize(saved.size)
         for (i in saved.indices) {
-            assertThat(body.content!![i].id).isEqualTo(saved[i].id.toString())
+            assertThat(body.content[i].id).isEqualTo(saved[i].id.toString())
         }
     }
 
@@ -164,9 +165,9 @@ class PlayerControllerTests :
 
     @ParameterizedTest
     @ValueSource(strings = ["", " "])
-    @NullSource
     fun givenInvalidName_whenCreatingPlayer_thenReturns400(name: String?) {
         val updateBody = mapOf("name" to name)
+        val expectedError = if (name == null) "must not be null" else "must not be blank"
 
         val response = restClient.post().uri("/api/v1/players")
             .contentType(MediaType.APPLICATION_JSON)
@@ -181,7 +182,26 @@ class PlayerControllerTests :
         assertThat(problem.status).isEqualTo(HttpStatus.BAD_REQUEST.value())
         assertThat(problem.getExtensionValue("errors"))
             .asInstanceOf(InstanceOfAssertFactories.LIST)
-            .contains(mapOf("field" to "name", "error" to "must not be blank"))
+            .contains(mapOf("field" to "name", "error" to expectedError))
+    }
+
+    @Test
+    fun givenNullName_whenCreatingPlayer_thenReturns400() {
+        val updateBody = mapOf("name" to null)
+
+        val response = restClient.post().uri("/api/v1/players")
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(updateBody)
+            .exchange()
+            .returnResult()
+
+        assertThat(response.status).isEqualTo(HttpStatus.BAD_REQUEST)
+        assertThat(response.responseHeaders.contentType).isEqualTo(MediaType.APPLICATION_PROBLEM_JSON)
+
+        val problem = jsonMapper.readValue<Problem>(response.responseBodyContent)
+        assertThat(problem.status).isEqualTo(HttpStatus.BAD_REQUEST.value())
+        assertThat(problem.getExtensionValue("property")).isEqualTo("name")
+        assertThat(problem.getExtensionValue("kind")).isEqualTo("string")
     }
 
     @Test
@@ -218,8 +238,7 @@ class PlayerControllerTests :
 
     @ParameterizedTest
     @ValueSource(strings = ["", " "])
-    @NullSource
-    fun givenInvalidName_whenUpdatePlayer_thenReturns400(name: String?) {
+    fun givenInvalidName_whenUpdatePlayer_thenReturns400(name: String) {
         val updateBody = mapOf("name" to name, "version" to 0L)
 
         val response = restClient.put().uri("/api/v1/players/{id}", player.id)
@@ -240,12 +259,29 @@ class PlayerControllerTests :
             }
     }
 
+    @Test
+    fun givenNullName_whenUpdatePlayer_thenReturns400() {
+        val updateBody = mapOf("name" to null, "version" to 0L)
+
+        val response = restClient.put().uri("/api/v1/players/{id}", player.id)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(updateBody)
+            .exchange()
+            .returnResult()
+
+        assertThat(response.status).isEqualTo(HttpStatus.BAD_REQUEST)
+        assertThat(response.responseHeaders.contentType).isEqualTo(MediaType.APPLICATION_PROBLEM_JSON)
+
+        val problem = jsonMapper.readValue<Problem>(response.responseBodyContent)
+        assertThat(problem.status).isEqualTo(HttpStatus.BAD_REQUEST.value())
+        assertThat(problem.getExtensionValue("property")).isEqualTo("name")
+        assertThat(problem.getExtensionValue("kind")).isEqualTo("string")
+    }
+
     @ParameterizedTest
-    @ValueSource(longs = [-1L])
-    @NullSource
-    fun givenInvalidVersion_whenUpdatePlayer_thenReturns400(version: Long?) {
+    @ValueSource(longs = [-1L, -200L])
+    fun givenInvalidVersion_whenUpdatePlayer_thenReturns400(version: Long) {
         val updateBody = mapOf("name" to "Alice", "version" to version)
-        val error = if (version == null) "must not be null" else "must be greater than or equal to 0"
 
         val response = restClient.put().uri("/api/v1/players/{id}", player.id)
             .contentType(MediaType.APPLICATION_JSON)
@@ -261,8 +297,27 @@ class PlayerControllerTests :
         assertThat(problem.getExtensionValue("errors"))
             .asInstanceOf(InstanceOfAssertFactories.LIST)
             .anySatisfy { e ->
-                assertThat(e).isEqualTo(mapOf("field" to "version", "error" to error))
+                assertThat(e).isEqualTo(mapOf("field" to "version", "error" to "must be greater than or equal to 0"))
             }
+    }
+
+    @Test
+    fun givenNullVersion_whenUpdatePlayer_thenReturns400() {
+        val updateBody = mapOf("name" to "Alice", "version" to null)
+
+        val response = restClient.put().uri("/api/v1/players/{id}", player.id)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(updateBody)
+            .exchange()
+            .returnResult()
+
+        assertThat(response.status).isEqualTo(HttpStatus.BAD_REQUEST)
+        assertThat(response.responseHeaders.contentType).isEqualTo(MediaType.APPLICATION_PROBLEM_JSON)
+
+        val problem = jsonMapper.readValue<Problem>(response.responseBodyContent)
+        assertThat(problem.status).isEqualTo(HttpStatus.BAD_REQUEST.value())
+        assertThat(problem.getExtensionValue("property")).isEqualTo("version")
+        assertThat(problem.getExtensionValue("kind")).isEqualTo("integer")
     }
 
     @Test

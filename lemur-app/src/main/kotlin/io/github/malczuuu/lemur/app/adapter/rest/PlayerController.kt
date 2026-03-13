@@ -41,7 +41,7 @@ class PlayerController(private val playerService: PlayerService) {
 
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun createPlayer(@RequestBody @Valid requestBody: CreatePlayerDto): ResponseEntity<IdentityResult> {
-        val command = PlayerCommand.CreatePlayer(name = requestBody.name!!)
+        val command = PlayerCommand.CreatePlayer(name = requestBody.name)
         val identity = playerService.createPlayer(command)
         val responseBody = IdentityResult(id = identity.id)
         return ResponseEntity.created(URI.create("/api/v1/players/${responseBody.id}")).body(responseBody)
@@ -56,7 +56,7 @@ class PlayerController(private val playerService: PlayerService) {
         @PathVariable id: String,
         @RequestBody @Valid requestBody: UpdatePlayerDto,
     ): ResponseEntity<Void> {
-        val command = PlayerCommand.UpdatePlayer(id = id, name = requestBody.name!!, version = requestBody.version!!)
+        val command = PlayerCommand.UpdatePlayer(id = id, name = requestBody.name, version = requestBody.version)
         playerService.updatePlayer(command)
         return ResponseEntity.noContent().build()
     }

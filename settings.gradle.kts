@@ -19,6 +19,8 @@ include(":lemur-libs:lemur-log4j2")
 include(":lemur-libs:lemur-migration")
 include(":lemur-libs:lemur-testkit")
 
+includeBuild("../problem4j-spring")
+
 /**
  * Duplicate project names have some side effects. This function verifies that there are no duplicate project names in
  * the build. Throws an exception if duplicates are found.
