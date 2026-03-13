@@ -2,7 +2,8 @@ name: Dependency Submission
 on:
   push:
     branches:
-      - main
+      - java
+      - kotlin
     paths:
       - '**/*.gradle.kts'
       - gradle.properties
