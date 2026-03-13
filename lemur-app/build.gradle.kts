@@ -1,9 +1,6 @@
-import internal.lombok
-
 plugins {
-    id("internal.errorprone-convention")
     id("internal.jacoco-convention")
-    id("internal.java-spring-app-convention")
+    id("internal.kotlin-spring-app-convention")
 }
 
 dependencies {
@@ -14,6 +11,9 @@ dependencies {
 
     implementation(project(":lemur-libs:lemur-contract"))
     implementation(project(":lemur-libs:lemur-log4j2"))
+
+    implementation(libs.jackson.module.kotlin)
+    implementation(libs.kotlin.reflect)
 
     implementation(libs.problem4j.spring.webmvc)
 
@@ -34,11 +34,6 @@ dependencies {
     testImplementation(libs.spring.boot.starter.actuator.test)
     testRuntimeOnly(libs.junit.platform.launcher)
     testRuntimeOnly(libs.postgresql)
-
-    errorprone(libs.errorprone.core)
-    errorprone(libs.nullaway)
-
-    lombok(libs.lombok)
 }
 
 configurations.all {

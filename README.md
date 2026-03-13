@@ -9,7 +9,7 @@ A template Spring Boot project with a dummy reference implementation of a REST e
 
 ## Tech Stack
 
-- **Java** with **Spring Boot 4**
+- **Kotlin** with **Spring Boot 4**
 - **Gradle 9** (Kotlin DSL)
 - **PostgreSQL** with **Flyway** migrations
 - **Apache Kafka**

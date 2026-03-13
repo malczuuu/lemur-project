@@ -1,6 +1,5 @@
 plugins {
-    id("internal.errorprone-convention")
-    id("internal.java-library-convention")
+    id("internal.kotlin-spring-library-convention")
 }
 
 dependencies {
@@ -23,9 +22,9 @@ dependencies {
     api(libs.testcontainers.postgresql)
 
     api(libs.archunit)
+    api(libs.jackson.module.kotlin)
+    api(libs.kotlin.reflect)
+    api(libs.kotlin.test.junit5)
 
     testRuntimeOnly(libs.junit.platform.launcher)
-
-    errorprone(libs.errorprone.core)
-    errorprone(libs.nullaway)
 }

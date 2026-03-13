@@ -13,13 +13,13 @@ idea {
         settings {
             runConfigurations {
                 create<Application>("launch lemur-app") {
-                    mainClass = "io.github.malczuuu.lemur.app.LemurApplication"
+                    mainClass = "io.github.malczuuu.lemur.app.LemurApplicationKt"
                     moduleName = "lemur-project.lemur-app.main"
                     workingDirectory = rootProject.rootDir.absolutePath
                     programParameters = ""
                 }
                 create<Application>("launch lemur-flyway") {
-                    mainClass = "io.github.malczuuu.lemur.flyway.FlywayApplication"
+                    mainClass = "io.github.malczuuu.lemur.flyway.FlywayApplicationKt"
                     moduleName = "lemur-project.lemur-flyway.main"
                     workingDirectory = rootProject.rootDir.absolutePath
                     programParameters = ""

@@ -30,9 +30,9 @@ import org.gradle.api.artifacts.dsl.DependencyHandler
  *   type for external module dependencies.
  */
 fun DependencyHandler.lombok(dependencyNotation: Any) {
-  add("compileOnly", dependencyNotation)
-  add("annotationProcessor", dependencyNotation)
+    add("compileOnly", dependencyNotation)
+    add("annotationProcessor", dependencyNotation)
 
-  add("testCompileOnly", dependencyNotation)
-  add("testAnnotationProcessor", dependencyNotation)
+    add("testCompileOnly", dependencyNotation)
+    add("testAnnotationProcessor", dependencyNotation)
 }

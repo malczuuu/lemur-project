@@ -56,7 +56,7 @@ spotless {
     kotlin {
         target("**/src/**/*.kt")
 
-        ktfmt("0.61").metaStyle()
+        ktlint("1.8.0").editorConfigOverride(mapOf("max_line_length" to "120"))
         endWithNewline()
         lineEndings = LineEnding.UNIX
     }

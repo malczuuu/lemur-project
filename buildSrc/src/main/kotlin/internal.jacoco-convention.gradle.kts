@@ -1,5 +1,5 @@
 plugins {
-    id("java")
+    id("org.jetbrains.kotlin.jvm")
     id("jacoco")
 }
 

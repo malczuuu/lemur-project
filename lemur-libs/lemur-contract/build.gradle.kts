@@ -1,5 +1,5 @@
 plugins {
-    id("internal.java-library-convention")
+    id("internal.kotlin-library-convention")
 }
 
 dependencies {
@@ -7,9 +7,6 @@ dependencies {
 
     api(libs.jackson.annotations)
     api(libs.jakarta.validation.api)
-    api(libs.jspecify)
-
-    compileOnly(libs.kafka.clients)
 
     testImplementation(project(":lemur-libs:lemur-testkit"))
     testRuntimeOnly(libs.junit.platform.launcher)

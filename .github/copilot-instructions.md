@@ -24,18 +24,18 @@
 - Auto-format: `./gradlew spotlessApply`
 - Run app: `./gradlew :lemur-app:bootRun`
 
-Requires JDK 25 and Docker (for Testcontainers). Always run `./gradlew spotlessApply build` before PR.
+Requires JDK 25 and Docker (for Testcontainers). Always run `./gradlew spotlessApply build` before finishing.
 
 ## Coding Guidelines
 
-- No wildcard imports in Java.
+- No wildcard imports in Kotlin.
 - All dependency versions in `gradle/libs.versions.toml`; use `lemur-bom` platform in each module.
 - Spotless enforces formatting - never manually reformat.
-- Keep REST contracts stable (`PlayerModel`, `RegisterPlayerModel`, controller mappings).
+- Keep REST and messaging contracts stable (classes from `lemur-contract`, controller mappings, etc.).
 
 ## Test Guidelines
 
-- **Naming:** `givenThis_whenThis_thenThis` - mandatory.
+- **Naming:** `givenThis_whenThis_thenThis` - mandatory. Ignore for `@ArchTest` as `ktlint` doesn't support it.
 - **Assertions:** AssertJ only.
 - **Delays:** Awaitility (`await().pollDelay(...).until(...)`) - never `Thread.sleep`.
 - Testcontainers tests are skipped unless `-Pcontainers.enabled` is passed.
@@ -50,9 +50,9 @@ Requires JDK 25 and Docker (for Testcontainers). Always run `./gradlew spotlessA
 
 - **Setup:**
   - Inject required JPA repositories for direct DB access in setup/teardown.
-  - Depending on tested feature, select `@SpringBootTest`, `@PostgresAwareTest`, `@KafkaAwareTest`, and/or
+  - Depending on tested feature, select `@SpringBootTest`, `PostgresAwareTest`, `KafkaAwareTest`, and/or
     `@AutoConfigureRestTestClient` (this list may evolve).
-- **Isolation:** `deleteAll()` in `@BeforeAll` and `@AfterEach`; seed data via JPA repository in `@BeforeEach`.
+- **Isolation:** `deleteAll()` in `@BeforeAll` and/or `@AfterEach`; seed data via JPA repository in `@BeforeEach`.
 
 ## Agent Instructions
 

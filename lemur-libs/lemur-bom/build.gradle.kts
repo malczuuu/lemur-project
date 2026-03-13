@@ -12,10 +12,9 @@ dependencies {
 
     constraints {
         api(libs.archunit)
-        api(libs.errorprone.core)
         api(libs.jspecify)
         api(libs.kafka.clients)
-        api(libs.lombok)
-        api(libs.nullaway)
+        api(libs.kotlin.reflect)
+        api(libs.kotlin.test.junit5)
     }
 }

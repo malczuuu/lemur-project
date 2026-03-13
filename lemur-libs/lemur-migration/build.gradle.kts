@@ -1,7 +1,6 @@
 plugins {
-    id("internal.errorprone-convention")
     id("internal.jacoco-convention")
-    id("internal.java-library-convention")
+    id("internal.kotlin-library-convention")
 }
 
 dependencies {
@@ -9,9 +8,6 @@ dependencies {
 
     testImplementation(project(":lemur-libs:lemur-testkit"))
     testRuntimeOnly(libs.junit.platform.launcher)
-
-    errorprone(libs.errorprone.core)
-    errorprone(libs.nullaway)
 }
 
 tasks.withType<ProcessResources>().configureEach {
