@@ -47,6 +47,15 @@ lemur-app:
   kafka:
     topic:
       player-events: lemur-app-player-events
+      fallback-events: lemur-app-fallback-events
+
+namastack:
+  outbox:
+    # kafka:
+    #   enable-json: true
+    polling:
+      fixed:
+        interval: 1000
 
 problem4j:
   detail-format: lowercase

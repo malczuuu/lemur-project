@@ -7,6 +7,8 @@ import java.util.List;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Test utility for consuming records from a Kafka topic in integration tests.
@@ -14,6 +16,8 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
  * <p>Wraps a {@link KafkaConsumer} and provides polling and buffer management methods.
  */
 class DefaultTestKafkaConsumer implements TestKafkaConsumer {
+
+  private static final Logger log = LoggerFactory.getLogger(DefaultTestKafkaConsumer.class);
 
   private final KafkaConsumer<String, String> consumer;
 
@@ -26,6 +30,28 @@ class DefaultTestKafkaConsumer implements TestKafkaConsumer {
   DefaultTestKafkaConsumer(KafkaConsumer<String, String> consumer, String topic) {
     this.consumer = consumer;
     this.consumer.subscribe(Collections.singletonList(topic));
+    waitForPartitionAssignment();
+  }
+
+  /**
+   * Waits until the consumer is assigned to at least one partition or the timeout elapses. Throws
+   * {@link IllegalStateException} if assignment does not occur in time.
+   */
+  private void waitForPartitionAssignment() {
+    log.info("Awaiting for TestKafkaConsumer to be assigned to partitions for 10 seconds");
+
+    long deadline = System.currentTimeMillis() + 10_000;
+
+    while (System.currentTimeMillis() < deadline) {
+      consumer.poll(Duration.ofMillis(100));
+      if (!consumer.assignment().isEmpty()) {
+        log.info("KafkaConsumer assigned to partitions: {}", consumer.assignment());
+        return;
+      }
+    }
+
+    throw new IllegalStateException(
+        "KafkaConsumer was not assigned to any partitions within 10 seconds");
   }
 
   /**

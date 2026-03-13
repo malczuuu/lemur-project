@@ -23,7 +23,7 @@ public final class KafkaTestUtils {
    */
   public static void awaitAssignment(KafkaListenerEndpointRegistry registry) {
     await()
-        .atMost(Duration.ofSeconds(30))
+        .atMost(Duration.ofSeconds(15))
         .pollInterval(Duration.ofMillis(200))
         .until(() -> checkPartitionsAssignment(registry));
   }

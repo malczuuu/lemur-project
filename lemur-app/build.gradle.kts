@@ -27,6 +27,9 @@ dependencies {
 
     implementation(libs.springdoc.openapi.starter.webmvc.ui)
 
+    implementation(libs.namastack.outbox.kafka)
+    implementation(libs.namastack.outbox.starter.jpa)
+
     runtimeOnly(libs.postgresql)
 
     testImplementation(project(":lemur-libs:lemur-migration"))

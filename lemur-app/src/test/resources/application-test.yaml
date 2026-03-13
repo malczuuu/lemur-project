@@ -7,6 +7,19 @@ spring:
     validate-on-migrate: true
     out-of-order: true
 
+# Testcontainers spawn single instance of PostgreSQL for all tests. Multiple contexts are being launched, which cause
+# rebalancing of the Outbox. To speed up tests, we set rebalance interval to 3 secs and instance timeout to 2 secs, so
+# that the Outbox will quickly detect stale instance and rebalance to the current one.
+namastack:
+  outbox:
+    polling:
+      fixed:
+        interval: 100
+    instance:
+      heartbeat-interval-seconds: 1
+      stale-instance-timeout-seconds: 2
+      rebalance-interval: 3000
+
 logging:
   level:
     io.github.malczuuu.lemur: DEBUG

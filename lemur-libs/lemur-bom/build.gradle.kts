@@ -16,6 +16,9 @@ dependencies {
         api(libs.jspecify)
         api(libs.kafka.clients)
         api(libs.lombok)
+        api(libs.namastack.outbox.kafka)
+        api(libs.namastack.outbox.starter.jdbc)
+        api(libs.namastack.outbox.starter.jpa)
         api(libs.nullaway)
     }
 }

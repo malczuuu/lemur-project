@@ -47,6 +47,7 @@ spotless {
 
     sql {
         target("**/src/main/resources/**/*.sql")
+        toggleOffOn()
 
         dbeaver()
         endWithNewline()
