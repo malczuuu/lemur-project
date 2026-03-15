@@ -10,6 +10,7 @@ java {
 
 kotlin {
     compilerOptions {
+        javaParameters = true
         freeCompilerArgs.addAll("-Xjsr305=strict", "-Xannotation-default-target=param-property")
     }
 }
